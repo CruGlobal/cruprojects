@@ -1,0 +1,5 @@
+<li>
+  <strong>Committer</strong> <%= link_to(commit.author.login, "http://github.com/#{commit.author.login}", target: '_blank') if commit.author %><br />
+  <%= commit.commit.message %><br />
+  <%= link_to('view on github', "http://github.com/#{@repo_name}/commit/#{commit.sha}", target: '_blank') %><br /><br />
+</li>

@@ -1,0 +1,16 @@
+<h2><%= link_to(@repo_name, "http://github.com/#{@repo_name}", target: '_blank') %></h2>
+<h3>Contributors</h3>
+<ul>
+<% @collaborators.each do |collaborator| %>
+  <li><%= link_to(collaborator.login, "http://github.com/#{collaborator.login}", target: '_blank') %></li>
+<% end %>
+</ul>
+<h3>Recent API Commits (include [api] in commit message)</h3>
+<ul>
+  <%= render partial: 'commit', collection: @commits.select {|c| c.commit.message.include?('[api]')} %>
+</ul>
+
+<h3>Recent Commits</h3>
+<ul>
+  <%= render partial: 'commit', collection: @commits %>
+</ul>

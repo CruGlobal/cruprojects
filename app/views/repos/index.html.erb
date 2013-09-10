@@ -1,0 +1,11 @@
+<% @orgs.each do |org| %>
+  <h2><%= org %></h2>
+  <ul>
+    <% github.org(org).rels[:repos].get.data.sort_by(&:name).each do |repo| %>
+      <li>
+        <%= link_to(repo.name, repo_path(CGI::escape(repo.full_name))) %> 
+        <%= " - #{repo.description}" if repo.description.present? %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
