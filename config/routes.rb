@@ -1,5 +1,9 @@
 Github::Application.routes.draw do
-  resources :repos
+  resources :repos do
+    collection do
+      get :details
+    end
+  end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

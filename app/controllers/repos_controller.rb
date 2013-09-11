@@ -3,8 +3,8 @@ class ReposController < ApplicationController
     @orgs = ['AgapeEurope','CruGlobal']
   end
 
-  def show
-    @repo_name = CGI::unescape(params[:id])
+  def details
+    @repo_name = params[:name]
     @repo = github.repo(@repo_name)
     @collaborators = @repo.rels[:contributors].get.data.sort_by(&:login)
     @commits = @repo.rels[:commits].get.data

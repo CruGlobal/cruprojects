@@ -3,7 +3,7 @@
   <ul>
     <% github.org(org).rels[:repos].get.data.sort_by(&:name).each do |repo| %>
       <li>
-        <%= link_to(repo.name, repo_path(CGI::escape(repo.full_name))) %> 
+        <%= link_to(repo.name, details_repos_path(name: repo.full_name)) %>
         <%= " - #{repo.description}" if repo.description.present? %>
       </li>
     <% end %>
