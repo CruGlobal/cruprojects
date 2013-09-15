@@ -1,4 +1,6 @@
 Github::Application.routes.draw do
+  resources :teams
+
   resources :repos do
     collection do
       get :details
