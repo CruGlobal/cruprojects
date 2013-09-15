@@ -32,9 +32,9 @@ rtapi.kF3Q.styling = { width:300, height:300 };
 <script src="https://www.rescuetime.com/anapi/js/embed/B63F3QTZIF3zSzhOA8AJ9oVGtrTS_F8MHCGMDGoZ" type="text/javascript"></script><script type='text/javascript'>RTAPI.render_all(rtapi);</script>
 
 <div style="float:left">
-<ul>
   <% @events.each do |date, events| %>
-    <li><h3><%= date.strftime('%a, %b %e %Y') %></h3></li>
+    <h3><%= date.strftime('%a, %b %e %Y') %></h3>
+    <ul>
     <% events.each do |event| %>
       <% event.payload.commits.select(&:distinct).each do |commit| %>
         <li>
@@ -43,6 +43,6 @@ rtapi.kF3Q.styling = { width:300, height:300 };
         </li>
       <% end %>
     <% end %>
+    </ul>
   <% end %>
-</ul>
 </div>
