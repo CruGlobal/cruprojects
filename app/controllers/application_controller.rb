@@ -10,7 +10,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def github
+  def github(user = nil)
+    user ||= session[:user]
+    if team_member = TeamMember.find_by(github_login: user)
+      token = team_member.access_token
+    end
+
+    token ||= session[:token]
+
     @github ||= Octokit::Client.new :access_token => session[:token]
   end
   helper_method :github

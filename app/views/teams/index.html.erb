@@ -1,14 +1,14 @@
 <h2>Josh</h2>
 <!-- configurable section -->
 <script type="text/javascript">
-if (typeof rtapi == 'undefined') var rtapi = {}; rtapi.kIV3 = {};
-rtapi.kIV3.title = 'Efficiency  Summary';
-rtapi.kIV3.kind = 'sidebar';
-rtapi.kIV3.styling = { width:300, height:300 };
+if (typeof rtapi == 'undefined') var rtapi = {}; rtapi.k9Py = {};
+rtapi.k9Py.title = 'Efficiency  Summary';
+rtapi.k9Py.kind = 'sidebar';
+rtapi.k9Py.styling = { width:300, height:300 };
 </script>
 <!-- below is required -->
-<div id="rtdivkIV3" style="float:left"></div>
-<script src="https://www.rescuetime.com/anapi/js/embed/B63IV3cdYXWWZkXd5YpCIuIHQXvv2ngDam58fc2C" type="text/javascript"></script><script type='text/javascript'>RTAPI.render_all(rtapi);</script>
+<div id="rtdivk9Py" style="float:left"></div>
+<script src="https://www.rescuetime.com/anapi/js/embed/B639Py5TA_pxwuJ7KUPBfueMeEjj9ISifNxF9sgw" type="text/javascript"></script><script type='text/javascript'>RTAPI.render_all(rtapi);</script>
 <!-- a little how-to
 - Paste this into your web page where you want the chart.
 - You may have multiple embedded charts on the same page.
@@ -22,17 +22,17 @@ rtapi.kIV3.styling = { width:300, height:300 };
 
 <!-- configurable section -->
 <script type="text/javascript">
-if (typeof rtapi == 'undefined') var rtapi = {}; rtapi.kF3Q = {};
-rtapi.kF3Q.title = 'All Categories ';
-rtapi.kF3Q.kind = 'sidebar';
-rtapi.kF3Q.styling = { width:300, height:300 };
+if (typeof rtapi == 'undefined') var rtapi = {}; rtapi.kwhL = {};
+rtapi.kwhL.title = 'Productivity  by day';
+rtapi.kwhL.kind = 'sidebar';
+rtapi.kwhL.styling = { width:300, height:300 };
 </script>
 <!-- below is required -->
-<div id="rtdivkF3Q" style="float:left"></div>
-<script src="https://www.rescuetime.com/anapi/js/embed/B63F3QTZIF3zSzhOA8AJ9oVGtrTS_F8MHCGMDGoZ" type="text/javascript"></script><script type='text/javascript'>RTAPI.render_all(rtapi);</script>
+<div id="rtdivkwhL" style="float:left"></div>
+<script src="https://www.rescuetime.com/anapi/js/embed/B63whLoHfLQPzwoehwQEjGQX_dSTeGA6nIxwgR5z" type="text/javascript"></script><script type='text/javascript'>RTAPI.render_all(rtapi);</script>
 
 <div style="float:left">
-  <% @events.each do |date, events| %>
+  <% @events['twinge'].each do |date, events| %>
     <h3><%= date.strftime('%a, %b %e %Y') %></h3>
     <ul>
     <% events.each do |event| %>
