@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
 
   def authorize_from_github
     unless session[:token]
+      session[:return_to] = request.path
       redirect_to '/auth/github'
     end
   end

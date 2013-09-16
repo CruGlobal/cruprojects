@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
       team_member.update_attributes(access_token: session[:token])
     end
 
-    redirect_to '/'
+    redirect_to(session[:return_to] || '/')
   end
 
   protected
