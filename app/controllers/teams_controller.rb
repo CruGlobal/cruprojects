@@ -22,14 +22,16 @@ class TeamsController < ApplicationController
               coding += row[1]
             end
           end
-          @marches[member][day] = case
-                                  when (coding / 3600) < 4
-                                    'red'
-                                  when (coding / 3600) >= 6
-                                    'green'
-                                  else
-                                    'yellow'
-                                  end
+          @marches[member][day] = {}
+          @marches[member][day][:color] = case
+                                          when (coding / 3600) < 4
+                                            'red'
+                                          when (coding / 3600) >= 6
+                                            'green'
+                                          else
+                                            'yellow'
+                                          end
+          @marches[member][day][:amount] = ((coding / 3600) * 10).to_i / 10.0
         end
       #rescue
         # Unable to pull data for this person from rescue time

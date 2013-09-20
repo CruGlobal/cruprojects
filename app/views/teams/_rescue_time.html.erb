@@ -7,7 +7,9 @@
   <tr>
     <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
       <td>
-        <i class="icon-circle" style="color:<%= @marches[team_member][day] %>"></i>
+        <% if @marches[team_member][day][:amount] > 4 || (1..5).include?(day.wday) %>
+          <i class="icon-circle" style="color:<%= @marches[team_member][day][:color] %>" title="<%= @marches[team_member][day][:amount] %>"></i>
+        <% end %>
       </td>
     <% end %>
   </tr>
