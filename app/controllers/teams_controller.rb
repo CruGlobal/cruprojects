@@ -33,7 +33,7 @@ class TeamsController < ApplicationController
                                           end
           @marches[member][day][:amount] = ((coding / 3600) * 10).to_i / 10.0
         end
-      #rescue
+      rescue
         # Unable to pull data for this person from rescue time
       end
 
