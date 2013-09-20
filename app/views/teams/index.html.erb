@@ -5,7 +5,7 @@
       <% active_days_count = @team_days[team].select {|day, hours| hours.to_f > 1}.length %>
       <% if active_days_count > 0 %>
         <% team_march_goal = active_days_count * @marches[team].length %>
-        <% amount = ((@team_days[team].sum {|day, hours| hours} / team_march_goal) * 100).round / 100.0 %>
+        <% amount = round(@team_days[team].sum {|day, hours| hours} / team_march_goal) %>
         <i class="icon-circle" style="color:<%= amount_to_color(amount) %>" title="<%= amount %>"></i>
       <% end %>
     </h2>
@@ -20,7 +20,7 @@
           <td>
             <% amount = (@team_days[team][day] || 0)
                if amount > 0
-                 amount /= @marches[team].select {|member, days| days[day].to_f > 0}.length
+                 amount = round(amount / @marches[team].select {|member, days| days[day].to_f > 0}.length)
                else
                 next
                end %>

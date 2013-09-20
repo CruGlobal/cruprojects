@@ -9,4 +9,8 @@ module ApplicationHelper
       'yellow'
     end
   end
+
+  def round(num)
+    number_with_precision(num, precision: 1).to_f
+  end
 end
