@@ -15,21 +15,23 @@ class TeamsController < ApplicationController
 
         # rescue time results for software dev
         begin
-          json = JSON.parse(RestClient.get("https://www.rescuetime.com/anapi/data?format=json&key=#{member.rescue_time_token}&perspective=interval&resolution_time=day&restrict_kind=category&restrict_thing=General%20Software%20Development"))
-          if json['rows']
-            @marches[team][member] = {}
-            Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day|
-              @team_days[team][day] ||= 0
-              coding = 0.0
-              json['rows'].each do |row|
-                if Date.parse(row[0]) == day &&
-                  ["General Software Development", "Systems Operations", "Data Modeling & Analysis", "Quality Assurance", "Project Management", "Editing & IDEs"].include?(row[3])
-                  coding += row[1]
+          if member.rescue_time_token.present?
+            json = JSON.parse(RestClient.get("https://www.rescuetime.com/anapi/data?format=json&key=#{member.rescue_time_token}&perspective=interval&resolution_time=day&restrict_kind=category&restrict_thing=General%20Software%20Development"))
+            if json['rows']
+              @marches[team][member] = {}
+              Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day|
+                @team_days[team][day] ||= 0
+                coding = 0.0
+                json['rows'].each do |row|
+                  if Date.parse(row[0]) == day &&
+                    ["General Software Development", "Systems Operations", "Data Modeling & Analysis", "Quality Assurance", "Project Management", "Editing & IDEs"].include?(row[3])
+                    coding += row[1]
+                  end
                 end
+                amount = ((coding / 3600) * 10).to_i / 10.0
+                @marches[team][member][day] = amount
+                @team_days[team][day] += amount
               end
-              amount = ((coding / 3600) * 10).to_i / 10.0
-              @marches[team][member][day] = amount
-              @team_days[team][day] += amount
             end
           end
         rescue

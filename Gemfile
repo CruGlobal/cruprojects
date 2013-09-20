@@ -6,6 +6,7 @@ gem 'rails', '4.0.0'
 gem 'activeadmin', git: 'git@github.com:gregbell/active_admin.git', branch: 'rails4'
 
 gem 'mysql2'
+gem 'jquery-ui-rails'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'

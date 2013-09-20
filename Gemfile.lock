@@ -204,6 +204,7 @@ DEPENDENCIES
   font-awesome-rails
   jbuilder (~> 1.2)
   jquery-rails
+  jquery-ui-rails
   mysql2
   octokit
   omniauth-github

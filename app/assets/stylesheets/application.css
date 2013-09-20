@@ -10,4 +10,5 @@
  *
  *= require_self
  *= require font-awesome
+ *= require jquery.ui.dialog
  */
