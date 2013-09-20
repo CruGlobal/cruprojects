@@ -10,7 +10,7 @@ class TeamsController < ApplicationController
       @marches[team] = {}
       team.team_members.each do |member|
         # github commits
-        @events[member] = github.user(member.github_login).rels[:events].get.data
+        @events[member] = github(member.github_login).user(member.github_login).rels[:events].get.data
         @events[member] = @events[member].select {|e| e.type == 'PushEvent' && e.created_at > Date.today.beginning_of_week}.group_by {|e| e.created_at.to_date}
 
         # rescue time results for software dev

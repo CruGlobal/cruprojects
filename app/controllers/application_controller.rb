@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
 
     token ||= session[:token]
 
-    @github ||= Octokit::Client.new :access_token => session[:token]
+    Octokit::Client.new :access_token => token
   end
   helper_method :github
 end
