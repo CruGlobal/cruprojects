@@ -1,4 +1,6 @@
 Github::Application.routes.draw do
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
   resources :teams
 
   resources :repos do

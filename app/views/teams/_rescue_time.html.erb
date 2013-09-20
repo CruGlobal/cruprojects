@@ -1,0 +1,14 @@
+<table border="0">
+  <tr>
+    <% %w[Su M T W Th F S].each do |day| %>
+      <th><%= day %></th>
+    <% end %>
+  </tr>
+  <tr>
+    <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
+      <td>
+        <i class="icon-circle" style="color:<%= @marches[team_member][day] %>"></i>
+      </td>
+    <% end %>
+  </tr>
+</table>

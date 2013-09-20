@@ -1,5 +1,5 @@
 <div style="float:left">
-  <% @events[nickname].each do |date, events| %>
+  <% @events[team_member].each do |date, events| %>
     <h3><%= date.strftime('%a, %b %e %Y') %></h3>
     <ul>
     <% events.each do |event| %>
@@ -11,5 +11,5 @@
       <% end %>
     <% end %>
     </ul>
-  <% end if @events[nickname].present? %>
+  <% end if @events[team_member].present? %>
 </div>
