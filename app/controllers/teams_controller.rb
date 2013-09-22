@@ -20,6 +20,7 @@ class TeamsController < ApplicationController
             if json['rows']
               @marches[team][member] = {}
               Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day|
+                next if day < Date.today
                 @team_days[team][day] ||= 0
                 coding = 0.0
                 json['rows'].each do |row|
