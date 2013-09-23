@@ -33,14 +33,16 @@
     </table>
 
     <% team.team_members.each do |team_member| %>
-      <h3><%= team_member.name %></h3>
-      <div>
-        <%= render 'rescue_time', team_member: team_member, team: team if @marches[team] %>
-      </div>
-      <div>
-        <%= link_to('commits', '#', onclick: "$('#js-commits_#{team_member.github_login}').dialog({width: 'auto'});return false;") %>
-        <div id="js-commits_<%= team_member.github_login %>" style="display:none">
-          <%= render 'events', team_member: team_member %>
+      <div style="border:1px solid black; margin:10px; padding: 10px">
+        <h3><%= team_member.name %></h3>
+        <div>
+          <%= render 'rescue_time', team_member: team_member, team: team if @marches[team] %>
+        </div>
+        <div>
+          <%= link_to('commits', '#', onclick: "$('#js-commits_#{team_member.github_login}').dialog({width: 'auto'});return false;") %>
+          <div id="js-commits_<%= team_member.github_login %>" style="display:none">
+            <%= render 'events', team_member: team_member %>
+          </div>
         </div>
       </div>
       <div style="clear:both"></div>
