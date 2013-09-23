@@ -20,7 +20,7 @@ class TeamsController < ApplicationController
             if json['rows']
               @marches[team][member] = {}
               Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day|
-                next if day < Date.today
+                next if day > Date.today
                 @team_days[team][day] ||= 0
                 coding = 0.0
                 json['rows'].each do |row|
@@ -29,9 +29,11 @@ class TeamsController < ApplicationController
                     coding += row[1]
                   end
                 end
-                amount = ((coding / 3600) * 10).to_i / 10.0
-                @marches[team][member][day] = amount
-                @team_days[team][day] += amount
+                if coding > 0
+                  amount = ((coding / 3600) * 10).to_i / 10.0
+                  @marches[team][member][day] = amount
+                  @team_days[team][day] += amount
+                end
               end
             end
           end
