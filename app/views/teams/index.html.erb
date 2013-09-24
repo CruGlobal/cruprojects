@@ -4,7 +4,7 @@
       <%= team.name %>
       <% active_days_count = @team_days[team.id].select {|day, hours| hours.to_f > 1}.length %>
       <% if active_days_count > 0 %>
-        <i class="icon-circle" style="color:<%= amount_to_color(@team_days[team.id][:cumulative]) %>" title="<%= @team_days[team.id][:cumulative] %>"></i>
+        <i class="icon-circle" style="color:<%= amount_to_color(@team_days[team.id][:cumulative]) %>" title="<%= round(@team_days[team.id][:cumulative]) %>"></i>
       <% end %>
     </h2>
     <table border="0">
