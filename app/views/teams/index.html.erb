@@ -1,63 +1,68 @@
+<table>
 <% @teams.each do |team| %>
-  <div style="float:left;padding-right:50px">
-    <h2>
-      <%= team.name %>
-      <% active_days_count = @team_days[team.id].select {|day, hours| hours.to_f > 1}.length %>
-      <% if active_days_count > 0 %>
-        <i class="icon-circle" style="color:<%= amount_to_color(@team_days[team.id][:cumulative]) %>" title="<%= round(@team_days[team.id][:cumulative]) %>"></i>
-      <% end %>
-    </h2>
-    <table border="0">
-      <tr>
-        <% %w[Su M T W Th F S].each do |day| %>
-          <th><%= day %></th>
+  <tr style="padding-bottom:50px">
+    <td>
+      <h2>
+        <%= team.name %>
+        <% active_days_count = @team_days[team.id].select {|day, hours| hours.to_f > 1}.length %>
+        <% if active_days_count > 0 %>
+          <i class="icon-circle" style="color:<%= amount_to_color(@team_days[team.id][:cumulative]) %>" title="<%= round(@team_days[team.id][:cumulative]) %>"></i>
         <% end %>
-      </tr>
-      <tr>
-        <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
-          <td>
-            <% amount = (@team_days[team.id][day] || 0)
-               if amount > 0
-                 amount = round(amount / @marches[team.id].select {|member, days| days[day].to_f > 0}.length)
-               else
-                next
-               end %>
-            <% if @team_days[team.id][day] && (amount > 4 || (1..5).include?(day.wday)) %>
-              <i class="icon-circle" style="color:<%= amount_to_color(amount) %>" title="<%= amount %>"></i>
-            <% end %>
-          </td>
-        <% end %>
-      </tr>
-        <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
-          <td>
-            <% amount = (@team_days[team.id][day] || 0)
-               if amount > 0
-                 amount = round(amount / @marches[team.id].select {|member, days| days[day].to_f > 0}.length)
-               else
-                next
-               end %>
-            <% if @team_days[team.id][day] && (amount > 4 || (1..5).include?(day.wday)) %>
-              <%= amount %>
-            <% end %>
-          </td>
-        <% end %>
-      </tr>
-    </table>
+      </h2>
+      <table border="0" cellpadding="2">
+        <tr>
+          <% %w[Su M T W Th F S].each do |day| %>
+            <th><%= day %></th>
+          <% end %>
+        </tr>
+        <tr>
+          <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
+            <td>
+              <% amount = (@team_days[team.id][day] || 0)
+                 if amount > 0
+                   amount = round(amount / @marches[team.id].select {|member, days| days[day].to_f > 0}.length)
+                 else
+                  next
+                 end %>
+              <% if @team_days[team.id][day] && (amount > 4 || (1..5).include?(day.wday)) %>
+                <i class="icon-circle" style="color:<%= amount_to_color(amount) %>" title="<%= amount %>"></i>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+          <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
+            <td>
+              <% amount = (@team_days[team.id][day] || 0)
+                 if amount > 0
+                   amount = round(amount / @marches[team.id].select {|member, days| days[day].to_f > 0}.length)
+                 else
+                  next
+                 end %>
+              <% if @team_days[team.id][day] && (amount > 4 || (1..5).include?(day.wday)) %>
+                <%= amount %>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      </table>
+    </td>
 
     <% team.team_members.each do |team_member| %>
-      <div style="border:1px solid black; margin:10px; padding: 10px">
-        <h3><%= team_member.name %></h3>
-        <div>
-          <%= render 'rescue_time', team_member: team_member, team: team if @marches[team.id] %>
-        </div>
-        <div>
-          <%= link_to('commits', '#', onclick: "$('#js-commits_#{team_member.github_login}').dialog({width: 'auto'});return false;") %>
-          <div id="js-commits_<%= team_member.github_login %>" style="display:none">
-            <%= render 'events', team_member: team_member %>
+      <td>
+        <div style="border:1px solid black; margin:10px; padding: 10px">
+          <h3><%= team_member.name %></h3>
+          <div>
+            <%= render 'rescue_time', team_member: team_member, team: team if @marches[team.id] %>
+          </div>
+          <div>
+            <%= link_to('commits', '#', onclick: "$('#js-commits_#{team_member.github_login}').dialog({width: 'auto'});return false;") %>
+            <div id="js-commits_<%= team_member.github_login %>" style="display:none">
+              <%= render 'events', team_member: team_member %>
+            </div>
           </div>
         </div>
-      </div>
-      <div style="clear:both"></div>
+      </td>
     <% end %>
-  </div>
+  </tr>
 <% end %>
+</table>
