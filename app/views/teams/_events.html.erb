@@ -1,15 +1,15 @@
 <div style="float:left">
-  <% @events[team_member].each do |date, events| %>
-    <h3><%= date.strftime('%a, %b %e %Y') %></h3>
+  <% @events[team_member.id].each do |date, events| %>
+    <h3><%= date %></h3>
     <ul>
     <% events.each do |event| %>
-      <% event.payload.commits.select(&:distinct).each do |commit| %>
+      <% event[:commits].each do |commit| %>
         <li>
-          <%= event.repo.name.split('/').last %> -
-          <%= commit.message %>
+          <%= commit[:repo] %> -
+          <%= commit[:message] %>
         </li>
       <% end %>
     <% end %>
     </ul>
-  <% end if @events[team_member].present? %>
+  <% end if @events[team_member.id].present? %>
 </div>

@@ -62,6 +62,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.3)
+    dalli (2.6.4)
     devise (3.1.0)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -201,6 +202,7 @@ DEPENDENCIES
   activeadmin!
   choices
   coffee-rails (~> 4.0.0)
+  dalli
   font-awesome-rails
   jbuilder (~> 1.2)
   jquery-rails

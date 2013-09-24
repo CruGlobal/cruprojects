@@ -4,12 +4,21 @@
       <th><%= day %></th>
     <% end %>
   </tr>
-  <% if @marches[team][team_member] %>
+  <% if @marches[team.id][team_member.id] %>
     <tr>
       <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
         <td>
-          <% if @marches[team][team_member][day] && (@marches[team][team_member][day] > 4 || (1..5).include?(day.wday)) %>
-            <i class="icon-circle" style="color:<%= amount_to_color(@marches[team][team_member][day]) %>" title="<%= @marches[team][team_member][day] %>"></i>
+          <% if @marches[team.id][team_member.id][day] && (@marches[team.id][team_member.id][day] > 4 || (1..5).include?(day.wday)) %>
+            <i class="icon-circle" style="color:<%= amount_to_color(@marches[team.id][team_member.id][day]) %>" title="<%= @marches[team.id][team_member.id][day] %>"></i>
+          <% end %>
+        </td>
+      <% end %>
+    </tr>
+    <tr>
+      <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
+        <td>
+          <% if @marches[team.id][team_member.id][day] && (@marches[team.id][team_member.id][day] > 4 || (1..5).include?(day.wday)) %>
+            <%= @marches[team.id][team_member.id][day] %>
           <% end %>
         </td>
       <% end %>
