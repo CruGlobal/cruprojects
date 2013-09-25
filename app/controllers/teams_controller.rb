@@ -37,7 +37,7 @@ class TeamsController < ApplicationController
                   coding = 0.0
                   json['rows'].each do |row|
                     if Date.parse(row[0]) == day &&
-                      ["General Software Development", "Systems Operations", "Data Modeling & Analysis", "Quality Assurance", "Project Management", "Editing & IDEs"].include?(row[3])
+                      ["General Software Development", "Systems Operations", "Data Modeling & Analysis", "Quality Assurance", "Project Management", "Editing & IDEs", "Design & Planning"].include?(row[3])
                       coding += row[1]
                     end
                   end
@@ -66,7 +66,7 @@ class TeamsController < ApplicationController
           end
           @team_days[team.id][:cumulative] += amount
         end
-        @team_days[team.id][:cumulative] /= days
+        @team_days[team.id][:cumulative] /= days if days > 0
       end
 
       Rails.cache.write('team_days', @team_days, expires_in: 5.minutes)
