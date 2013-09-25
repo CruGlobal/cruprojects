@@ -41,7 +41,7 @@ class TeamsController < ApplicationController
                       coding += row[1]
                     end
                   end
-                  if coding > 0
+                  if coding > 0.1
                     amount = ((coding / 3600) * 10).to_i / 10.0
                     @marches[team.id][member.id][day] = amount
                     @team_days[team.id][day] += amount
