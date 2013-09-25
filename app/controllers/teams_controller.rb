@@ -28,7 +28,7 @@ class TeamsController < ApplicationController
           # rescue time results for software dev
           begin
             if member.rescue_time_token.present?
-              json = JSON.parse(RestClient.get("https://www.rescuetime.com/anapi/data?format=json&key=#{member.rescue_time_token}&perspective=interval&resolution_time=day"))
+              json = JSON.parse(RestClient.get("https://www.rescuetime.com/anapi/data?format=json&key=#{member.rescue_time_token}&perspective=interval&resolution_time=day&restrict_kind=category&restrict_thing=General%20Software%20Development"))
               if json['rows']
                 @marches[team.id][member.id] = {}
                 Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day|
