@@ -41,15 +41,15 @@ class TeamsController < ApplicationController
                       coding += row[1]
                     end
                   end
-                  if coding > 0.1
-                    amount = ((coding / 3600) * 10).to_i / 10.0
+                  amount = ((coding / 3600) * 10).to_i / 10.0
+                  if amount > 0.2
                     @marches[team.id][member.id][day] = amount
                     @team_days[team.id][day] += amount
                   end
                 end
               end
             end
-          #rescue
+          rescue
             # Unable to pull data for this person from rescue time
           end
         end
@@ -60,7 +60,7 @@ class TeamsController < ApplicationController
           amount = (@team_days[team.id][day] || 0)
           if amount > 0
             days += 1
-            amount = amount / @marches[team.id].select {|member, days| days[day].to_f > 0}.length
+            amount = amount / @marches[team.id].select {|member, ds| ds[day].to_f > 0}.length
           else
            next
           end
