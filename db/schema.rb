@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130920152920) do
+ActiveRecord::Schema.define(version: 20130926001538) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -45,6 +45,17 @@ ActiveRecord::Schema.define(version: 20130920152920) do
 
   add_index "admin_users", ["email"], name: "index_admin_users_on_email", unique: true, using: :btree
   add_index "admin_users", ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true, using: :btree
+
+  create_table "github_commits", force: true do |t|
+    t.date     "push_date"
+    t.integer  "team_member_id"
+    t.text     "commit_message"
+    t.string   "repo"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "github_commits", ["team_member_id"], name: "index_github_commits_on_team_member_id", using: :btree
 
   create_table "team_members", force: true do |t|
     t.string   "name"
