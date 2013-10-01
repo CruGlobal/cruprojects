@@ -28,7 +28,7 @@ class TeamMember < ActiveRecord::Base
           break if day > Date.today
           team_days[team.id][day] ||= 0
           coding = 0.0
-          if day == Date.today
+          if day == Date.today || day == Date.yesterday
             json = JSON.parse(RestClient.get("https://www.rescuetime.com/anapi/data?format=json&key=#{rescue_time_token}&perspective=interval&resolution_time=day&restrict_kind=category&restrict_begin=#{day.to_s(:db)}"))
             # use the data from the API
             if json['rows']
