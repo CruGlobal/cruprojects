@@ -5,8 +5,11 @@ class CreateGithubCommits < ActiveRecord::Migration
       t.belongs_to :team_member, index: true
       t.text :commit_message
       t.string :repo
+      t.string :sha
 
       t.timestamps
     end
+
+    add_index :github_commits, [:sha, :repo], name: 'sha_repo'
   end
 end

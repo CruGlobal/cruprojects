@@ -15,7 +15,7 @@ class Team < ActiveRecord::Base
         days += 1
         amount = amount / marches[id].select {|member, ds| ds[day].to_f > 0}.length
       else
-       next
+        next
       end
       team_days[id][:cumulative] += amount
     end

@@ -1,9 +1,9 @@
 class TeamsController < ApplicationController
   def index
     @teams = Team.all
-    @events = Rails.cache.fetch('events')
-    @marches = Rails.cache.fetch('marches')
-    @team_days = Rails.cache.fetch('team_days')
+    #@events = Rails.cache.fetch('events')
+    #@marches = Rails.cache.fetch('marches')
+    #@team_days = Rails.cache.fetch('team_days')
 
     unless @events && @marches && @team_days
       @events = {}

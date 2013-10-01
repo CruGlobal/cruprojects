@@ -1,5 +1,7 @@
 class TeamMember < ActiveRecord::Base
   belongs_to :team#, inverse_of: :team_members
+  has_many :github_commits
+  has_many :rescue_time_category_days
 
   validates :team_id, presence: true
 
@@ -10,7 +12,11 @@ class TeamMember < ActiveRecord::Base
                            .select {|e| e.type == 'PushEvent' && e.created_at > Date.today.beginning_of_week}
                            .collect {|e| {date: e.created_at.to_date.strftime('%a, %b %e %Y'),
                                           commits: e.payload.commits.select(&:distinct)
-                                                     .collect {|c| {repo: e.repo.name.split('/').last, message: c.message}}
+                                                     .collect {|c|
+                                                       github_commits.where(sha: c.sha, repo: e.repo.name)
+                                                         .first_or_create(commit_message: c.message, push_date: e.created_at);
+                                                       {repo: e.repo.name.split('/').last, message: c.message}
+                                                     }
                                          }
                            }
                            .group_by {|e| e[:date]}
@@ -22,13 +28,17 @@ class TeamMember < ActiveRecord::Base
         if json['rows']
           marches[team.id][id] = {}
           Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day|
-            next if day > Date.today
+            break if day > Date.today
             team_days[team.id][day] ||= 0
             coding = 0.0
             json['rows'].each do |row|
-              if Date.parse(row[0]) == day &&
-                ["General Software Development", "Systems Operations", "Data Modeling & Analysis", "Quality Assurance", "Project Management", "Editing & IDEs", "Design & Planning"].include?(row[3])
-                coding += row[1]
+              rescue_day = Date.parse(row[0])
+              if rescue_day == day
+                day_cat = rescue_time_category_days.where(day: rescue_day, category: row[3]).first_or_create
+                day_cat.update(amount: row[1])
+                if ["General Software Development", "Systems Operations", "Data Modeling & Analysis", "Quality Assurance", "Project Management", "Editing & IDEs", "Design & Planning"].include?(row[3])
+                  coding += row[1]
+                end
               end
             end
             amount = ((coding / 3600) * 10).to_i / 10.0
@@ -39,7 +49,7 @@ class TeamMember < ActiveRecord::Base
           end
         end
       end
-    rescue
+    #rescue
       # Unable to pull data for this person from rescue time
     end
   end
