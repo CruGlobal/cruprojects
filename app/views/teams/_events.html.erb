@@ -1,14 +1,12 @@
 <div style="float:left">
-  <% @events[team_member.id].each do |date, events| %>
+  <% @events[team_member.id].group_by {|c| c[:date] }.each do |date, commits| %>
     <h3><%= date %></h3>
     <ul>
-    <% events.each do |event| %>
-      <% event[:commits].each do |commit| %>
-        <li>
-          <%= commit[:repo] %> -
-          <%= commit[:message] %>
-        </li>
-      <% end %>
+    <% commits.each do |commit| %>
+      <li>
+        <%= commit[:repo] %> -
+        <%= commit[:message] %>
+      </li>
     <% end %>
     </ul>
   <% end if @events[team_member.id].present? %>
