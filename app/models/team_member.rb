@@ -9,15 +9,18 @@ class TeamMember < ActiveRecord::Base
 
   def load_data(events, marches, team_days, current_token)
     # github commits
-    data = github(current_token).user(github_login).rels[:events].get.data
-    data.select {|e| e.type == 'PushEvent' && e.created_at > Date.today.beginning_of_week}
-        .map {|e|  e.payload.commits.select(&:distinct)
-                                    .map {|c| github_commits.where(sha: c.sha, repo: e.repo.name)
-                                                            .first_or_create(commit_message: c.message, push_date: e.created_at)
-                                         }
+    begin
+      data = github(current_token).user(github_login).rels[:events].get.data
+      data.select {|e| e.type == 'PushEvent' && e.created_at > Date.today.beginning_of_week}
+          .map {|e|  e.payload.commits.select(&:distinct)
+                                      .map {|c| github_commits.where(sha: c.sha, repo: e.repo.name)
+                                                              .first_or_create(commit_message: c.message, push_date: e.created_at)
+                                           }
 
-             }
-
+               }
+    rescue
+      # Don't puke just because github is down
+    end
     events[id] = github_commits.where("push_date >= ?", Date.today.beginning_of_week).collect {|c| {date: c.push_date, repo: c.repo, message: c.commit_message, sha: c.sha}}
 
     # rescue time results for software dev
@@ -55,7 +58,7 @@ class TeamMember < ActiveRecord::Base
           end
         end
       end
-    #rescue
+    rescue
       # Unable to pull data for this person from rescue time
     end
   end
