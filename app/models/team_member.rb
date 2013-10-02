@@ -5,7 +5,7 @@ class TeamMember < ActiveRecord::Base
 
   validates :team_id, presence: true
 
-  SOFTWARE_DEV = ["General Software Development", "Systems Operations", "Data Modeling & Analysis", "Quality Assurance", "Project Management", "Editing & IDEs", "Design & Planning"]
+  SOFTWARE_DEV = ['General Software Development', 'Systems Operations', 'Data Modeling & Analysis', 'Quality Assurance', 'Project Management', 'Editing & IDEs', 'Design & Planning', 'Troubleshooting']
 
   def load_data(events, marches, team_days, current_token)
     # github commits
