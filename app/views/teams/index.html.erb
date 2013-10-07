@@ -16,7 +16,7 @@
           <% end %>
         </tr>
         <tr>
-          <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
+          <% @start_date.step(@end_date) do |day| %>
             <td>
               <% amount = (@team_days[team.id][day] || 0)
                  if amount > 0
@@ -30,7 +30,7 @@
             </td>
           <% end %>
         </tr>
-          <% Date.today.beginning_of_week(:sunday).step(Date.today.end_of_week(:sunday)) do |day| %>
+          <% @start_date.step(@end_date) do |day| %>
             <td>
               <% amount = (@team_days[team.id][day] || 0)
                  if amount > 0
