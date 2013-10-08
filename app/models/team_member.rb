@@ -27,8 +27,7 @@ class TeamMember < ActiveRecord::Base
     begin
       if rescue_time_token.present?
         marches[team.id][id] = {}
-        json = JSON.parse(RestClient.get("https://www.rescuetime.com/anapi/data?format=json&key=#{rescue_time_token}&perspective=interval&resolution_time=day&restrict_kind=category&restrict_begin=#{start_date.to_s(:db)}"))
-        rows = json['rows'].group_by {|r| Date.parse(r[0]) } if json['rows']
+        rows = RescueTime.new(self).data(start_date, end_date).group_by {|r| Date.parse(r[0]) }
 
         start_date.step(end_date) do |day|
           break if day > Date.today

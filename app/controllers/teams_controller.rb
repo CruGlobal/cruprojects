@@ -17,7 +17,7 @@ class TeamsController < ApplicationController
         team.load_data(@events, @marches, @team_days, session[:token], @start_date, @end_date)
       end
 
-      expiration_time = @start_date < Date.today.beginning_of_week(:sunday) ? 1.hour : 10.minutes
+      expiration_time = @start_date < Date.today.beginning_of_week(:sunday) ? 1.day : 10.minutes
       Rails.cache.write(['team_days', params[:start_date]], @team_days, expires_in: expiration_time)
       Rails.cache.write(['marches', params[:start_date]], @marches, expires_in: expiration_time)
       Rails.cache.write(['events', params[:start_date]], @events, expires_in: expiration_time)

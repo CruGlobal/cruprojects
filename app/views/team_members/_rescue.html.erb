@@ -1,0 +1,33 @@
+<h2><%= @team_member.name %> - <%= @date.to_s(:long) %></h2>
+<table border="0" cellpadding="5">
+  <tr>
+    <th>Time Spent</th>
+    <th>Thing</th>
+    <th>Category</th>
+  </tr>
+  <tbody>
+    <% @rows.select { |row| row[1] >= 5.minutes }.each do |row| %>
+      <tr>
+        <td><%= distance_of_time_in_words(row[1]) %></td>
+        <td><%= row[3] %></td>
+        <td><%= row[4] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+  <tfoot style="border: 1px solid black; background: #f0f0f0">
+    <% cat_rows = @rows.select { |row| row[1] < 5.minutes }
+                       .group_by { |row| row[4] }
+                       .collect { |cat, cat_rows| [cat, cat_rows.sum {|r| r[1].to_i}] }
+                       .select { |c| c[1] >= 5.minutes }
+                       .sort_by {|c| c[1]}
+                       .reverse %>
+    <% cat_rows.each do |c| %>
+      <tr>
+        <td><%= distance_of_time_in_words(c[1]) %></td>
+        <td>misc</td>
+        <td><%= c[0] %></td>
+      </tr>
+    <% end %>
+  </tfoot>
+
+</table>

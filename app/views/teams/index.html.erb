@@ -52,20 +52,21 @@ Week of <%= @start_date.to_s(:long) %>
       <td>
         <div style="border:1px solid black; margin:10px; padding: 10px">
           <h3>
-            <%= team_member.name %>
+            <%= link_to(team_member.name, rescue_team_member_path(team_member), remote: true) %>
             <% active_days_count = @marches[team.id][team_member.id].select {|day, hours| hours.to_f > 0.2}.length %>
             <% if active_days_count > 0 %>
               <% avg = @marches[team.id][team_member.id].sum {|day, hours| hours} / active_days_count %>
               <i class="icon-circle" style="color:<%= amount_to_color(avg) %>" title="<%= round(avg) %>"></i>
             <% end %>
           </h3>
+          <div id="js-rescue_details_<%= team_member.github_login %>" style="display:none"></div>
           <div>
             <%= render 'rescue_time', team_member: team_member, team: team if @marches[team.id] %>
           </div>
           <div>
             <% commit_count = @events[team_member.id].length %>
             <% if commit_count > 0 %>
-              <%= link_to("commits (#{commit_count})", '#', onclick: "$('#js-commits_#{team_member.github_login}').dialog({width: 'auto'});return false;") %>
+              <%= link_to("commits (#{commit_count})", '#', class: 'js-commits', data: {login: team_member.github_login}) %>
               <div id="js-commits_<%= team_member.github_login %>" style="display:none">
                 <%= render 'events', team_member: team_member %>
               </div>

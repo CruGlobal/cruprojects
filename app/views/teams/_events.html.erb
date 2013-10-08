@@ -4,8 +4,7 @@
     <ul>
     <% commits.each do |commit| %>
       <li>
-        <%= commit[:repo] %> -
-        <%= commit[:message] %>
+      <%= link_to("#{commit[:repo]} - #{commit[:message]}", "http://github.com/#{commit[:repo]}/commit/#{commit[:sha]}", target: '_blank') %>
       </li>
     <% end %>
     </ul>
