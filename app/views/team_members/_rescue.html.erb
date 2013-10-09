@@ -1,4 +1,8 @@
 <h2><%= @team_member.name %> - <%= @date.to_s(:long) %></h2>
+<%= link_to('previous day', rescue_team_member_path(@team_member, start_date: @date - 1.day), remote: true) %>
+<% if @date < Date.today %> | 
+  <%= link_to('next day', rescue_team_member_path(@team_member, start_date: @date + 1.day), remote: true) %> 
+<% end %>
 <table border="0" cellpadding="5">
   <tr>
     <th>Time Spent</th>
