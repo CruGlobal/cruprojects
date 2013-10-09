@@ -53,10 +53,12 @@ Week of <%= @start_date.to_s(:long) %>
         <div style="border:1px solid black; margin:10px; padding: 10px">
           <h3>
             <%= link_to(team_member.name, rescue_team_member_path(team_member), remote: true) %>
-            <% active_days_count = @marches[team.id][team_member.id].select {|day, hours| hours.to_f > 0.2}.length %>
-            <% if active_days_count > 0 %>
-              <% avg = @marches[team.id][team_member.id].sum {|day, hours| hours} / active_days_count %>
-              <i class="icon-circle" style="color:<%= amount_to_color(avg) %>" title="<%= round(avg) %>"></i>
+            <% if @marches[team.id][team_member.id] %>
+              <% active_days_count = @marches[team.id][team_member.id].select {|day, hours| hours.to_f > 0.2}.length %>
+              <% if active_days_count > 0 %>
+                <% avg = @marches[team.id][team_member.id].sum {|day, hours| hours} / active_days_count %>
+                <i class="icon-circle" style="color:<%= amount_to_color(avg) %>" title="<%= round(avg) %>"></i>
+              <% end %>
             <% end %>
           </h3>
           <div id="js-rescue_details_<%= team_member.github_login %>" style="display:none"></div>

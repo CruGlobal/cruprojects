@@ -62,7 +62,7 @@ ActiveRecord::Schema.define(version: 20131001003003) do
   create_table "rescue_time_category_days", force: true do |t|
     t.date     "day"
     t.string   "category"
-    t.integer  "amount"
+    t.integer  "amount",         default: 0
     t.integer  "team_member_id"
     t.datetime "created_at"
     t.datetime "updated_at"

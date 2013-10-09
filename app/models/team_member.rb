@@ -57,7 +57,7 @@ class TeamMember < ActiveRecord::Base
           end
         end
       end
-    #rescue
+    rescue
       # Unable to pull data for this person from rescue time
     end
   end

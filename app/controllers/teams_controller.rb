@@ -1,11 +1,15 @@
 class TeamsController < ApplicationController
   def index
     @teams = Team.all
+
+    @start_date = params[:start_date] ? Date.parse(params[:start_date]) : Date.today.beginning_of_week(:sunday)
+
+    params[:start_date] = nil if @start_date == Date.today.beginning_of_week(:sunday)
+
     @events = Rails.cache.fetch(['events', params[:start_date]])
     @marches = Rails.cache.fetch(['marches', params[:start_date]])
     @team_days = Rails.cache.fetch(['team_days', params[:start_date]])
 
-    @start_date = params[:start_date] ? Date.parse(params[:start_date]) : Date.today.beginning_of_week(:sunday)
     @end_date = @start_date + 6.days
 
     unless @events && @marches && @team_days
