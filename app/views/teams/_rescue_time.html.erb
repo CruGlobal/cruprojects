@@ -1,12 +1,12 @@
 <table border="0" cellpadding="2">
   <tr>
-    <% %w[Su M T W Th F S].each do |day| %>
+    <% %w[M T W Th F].each do |day| %>
       <th><%= day %></th>
     <% end %>
   </tr>
   <% if @marches[team.id][team_member.id] %>
     <tr>
-      <% @start_date.step(@end_date) do |day| %>
+      <% (@start_date + 1.day).step(@end_date - 1.day) do |day| %>
         <td>
           <% if @marches[team.id][team_member.id][day] && (@marches[team.id][team_member.id][day] > 4 || (1..5).include?(day.wday)) %>
             <i class="icon-circle" style="color:<%= amount_to_color(@marches[team.id][team_member.id][day]) %>" title="<%= @marches[team.id][team_member.id][day] %>"></i>
@@ -15,7 +15,7 @@
       <% end %>
     </tr>
     <tr>
-      <% @start_date.step(@end_date) do |day| %>
+      <% (@start_date + 1.day).step(@end_date - 1.day) do |day| %>
         <td>
           <% if @marches[team.id][team_member.id][day] && (@marches[team.id][team_member.id][day] > 4 || (1..5).include?(day.wday)) %>
             <%= @marches[team.id][team_member.id][day] %>

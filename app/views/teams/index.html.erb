@@ -12,12 +12,12 @@ Week of <%= @start_date.to_s(:long) %>
       </h2>
       <table border="0" cellpadding="2">
         <tr>
-          <% %w[Su M T W Th F S].each do |day| %>
+          <% %w[M T W Th F].each do |day| %>
             <th><%= day %></th>
           <% end %>
         </tr>
         <tr>
-          <% @start_date.step(@end_date) do |day| %>
+          <% (@start_date + 1.day).step(@end_date - 1.day) do |day| %>
             <td>
               <% amount = (@team_days[team.id][day] || 0)
                  if amount > 0
@@ -31,7 +31,7 @@ Week of <%= @start_date.to_s(:long) %>
             </td>
           <% end %>
         </tr>
-          <% @start_date.step(@end_date) do |day| %>
+          <% (@start_date + 1.day).step(@end_date - 1.day) do |day| %>
             <td>
               <% amount = (@team_days[team.id][day] || 0)
                  if amount > 0

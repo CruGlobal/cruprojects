@@ -5,7 +5,8 @@ class TeamMember < ActiveRecord::Base
 
   validates :team_id, presence: true
 
-  SOFTWARE_DEV = ['General Software Development', 'Systems Operations', 'Data Modeling & Analysis', 'Quality Assurance', 'Project Management', 'Editing & IDEs', 'Design & Planning', 'Troubleshooting']
+  SOFTWARE_DEV = ['General Software Development', 'Systems Operations', 'Data Modeling & Analysis', 'Quality Assurance', 'Project Management',
+                  'Editing & IDEs', 'Design & Planning', 'Troubleshooting']
 
   def load_data(events, marches, team_days, current_token, start_date, end_date)
     # github commits
@@ -31,9 +32,18 @@ class TeamMember < ActiveRecord::Base
 
         start_date.step(end_date) do |day|
           break if day > Date.today
-          team_days[team.id][day] ||= 0
+          # If this is saturday or sunday, count the time towards monday
+          acting_day = case 
+                       when day.saturday? 
+                         day - 1.day
+                       when day.sunday?
+                         day + 1.day
+                       else
+                         day
+                       end
+
           coding = 0.0
-          if day == Date.today || day == Date.yesterday
+          if acting_day >= Date.yesterday
             # use the data from the API
             if rows && rows[day]
               rows[day].group_by {|r| r[4]}.each do |category, cat_rows|
@@ -46,18 +56,20 @@ class TeamMember < ActiveRecord::Base
               end
             end
           else
-             #use the data in the db
+            #use the data in the db
             coding += rescue_time_category_days.where(day: day, category: SOFTWARE_DEV).sum(:amount)
           end
 
           amount = ((coding / 3600) * 10).to_i / 10.0
           if amount > 0.2
-            marches[team.id][id][day] = amount
-            team_days[team.id][day] += amount
+            marches[team.id][id][acting_day] ||= 0
+            marches[team.id][id][acting_day] += amount
+            team_days[team.id][acting_day] ||= 0
+            team_days[team.id][acting_day] += amount
           end
         end
       end
-    rescue
+    #rescue
       # Unable to pull data for this person from rescue time
     end
   end
