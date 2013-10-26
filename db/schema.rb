@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131001003003) do
+ActiveRecord::Schema.define(version: 20131026223900) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -59,10 +59,20 @@ ActiveRecord::Schema.define(version: 20131001003003) do
   add_index "github_commits", ["sha", "repo"], name: "sha_repo", using: :btree
   add_index "github_commits", ["team_member_id"], name: "index_github_commits_on_team_member_id", using: :btree
 
+  create_table "off_days", force: true do |t|
+    t.date     "off_day"
+    t.integer  "team_member_id"
+    t.string   "reason"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "off_days", ["team_member_id"], name: "index_off_days_on_team_member_id", using: :btree
+
   create_table "rescue_time_category_days", force: true do |t|
     t.date     "day"
     t.string   "category"
-    t.integer  "amount",         default: 0
+    t.integer  "amount"
     t.integer  "team_member_id"
     t.datetime "created_at"
     t.datetime "updated_at"

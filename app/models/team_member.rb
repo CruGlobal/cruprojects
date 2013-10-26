@@ -2,6 +2,7 @@ class TeamMember < ActiveRecord::Base
   belongs_to :team#, inverse_of: :team_members
   has_many :github_commits
   has_many :rescue_time_category_days
+  has_many :off_days
 
   validates :team_id, presence: true
 
@@ -9,21 +10,22 @@ class TeamMember < ActiveRecord::Base
                   'Editing & IDEs', 'Design & Planning', 'Troubleshooting']
 
   def load_data(events, marches, team_days, current_token, start_date, end_date)
-    # github commits
-    begin
-      data = github(current_token).user(github_login).rels[:events].get.data
-      data.select {|e| e.type == 'PushEvent' && e.created_at > start_date}
-          .map {|e|  e.payload.commits.select(&:distinct)
-                                      .map {|c| github_commits.where(sha: c.sha, repo: e.repo.name)
-                                                              .first_or_create(commit_message: c.message, push_date: e.created_at)
-                                           }
+    unless events[id]
+      # github commits
+      begin
+        data = github(current_token).user(github_login).rels[:events].get.data
+        data.select {|e| e.type == 'PushEvent' && e.created_at > start_date}
+            .map {|e|  e.payload.commits.select(&:distinct)
+                                        .map {|c| github_commits.where(sha: c.sha, repo: e.repo.name)
+                                                                .first_or_create(commit_message: c.message, push_date: e.created_at)
+                                             }
 
-               }
-    rescue
-      # Don't puke just because github is down
+                 }
+      rescue
+        # Don't puke just because github is down
+      end
+      events[id] = github_commits.where("push_date >= ?", start_date).collect {|c| {date: c.push_date, repo: c.repo, message: c.commit_message, sha: c.sha}}
     end
-    events[id] = github_commits.where("push_date >= ?", start_date).collect {|c| {date: c.push_date, repo: c.repo, message: c.commit_message, sha: c.sha}}
-
     # rescue time results for software dev
     begin
       if rescue_time_token.present?
@@ -33,14 +35,16 @@ class TeamMember < ActiveRecord::Base
         start_date.step(end_date) do |day|
           break if day > Date.today
           # If this is saturday or sunday, count the time towards monday
-          acting_day = case 
-                       when day.saturday? 
+          acting_day = case
+                       when day.saturday?
                          day - 1.day
                        when day.sunday?
                          day + 1.day
                        else
                          day
                        end
+
+          next if off_days.find_by(off_day: acting_day)
 
           coding = 0.0
           if acting_day >= Date.yesterday

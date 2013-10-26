@@ -4,6 +4,7 @@ Github::Application.routes.draw do
   ActiveAdmin.routes(self)
 
   resources :teams
+  resources :off_days
 
   resources :team_members do
     member do

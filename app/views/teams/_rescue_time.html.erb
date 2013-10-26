@@ -17,8 +17,12 @@
     <tr>
       <% (@start_date + 1.day).step(@end_date - 1.day) do |day| %>
         <td>
-          <% if @marches[team.id][team_member.id][day] && (@marches[team.id][team_member.id][day] > 4 || (1..5).include?(day.wday)) %>
-            <%= @marches[team.id][team_member.id][day] %>
+          <% if off_day = team_member.off_days.find_by(off_day: day) %>
+            <%= off_day.reason.first.upcase %>
+          <% else %>
+            <% if @marches[team.id][team_member.id][day] && (@marches[team.id][team_member.id][day] > 4 || (1..5).include?(day.wday)) %>
+              <%= number_with_precision(@marches[team.id][team_member.id][day], precision: 1) %>
+            <% end %>
           <% end %>
         </td>
       <% end %>

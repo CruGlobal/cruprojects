@@ -13,9 +13,9 @@ class TeamsController < ApplicationController
     @end_date = @start_date + 6.days
 
     unless @events && @marches && @team_days
-      @events = {}
-      @marches = {}
-      @team_days = {}
+      @events ||= {}
+      @marches ||= {}
+      @team_days ||= {}
 
       @teams.each do |team|
         team.load_data(@events, @marches, @team_days, session[:token], @start_date, @end_date)
