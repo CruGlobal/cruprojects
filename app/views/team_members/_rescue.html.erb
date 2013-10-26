@@ -8,7 +8,7 @@
   <%= link_to("Unmark as #{off_day.reason}", off_day_path(off_day), method: :delete) %>
 <% else %>
   Mark as:
-  <% %w[sick vacation holiday other].each do |reason| %>
+  <% %w[sick vacation holiday mpd other].each do |reason| %>
     <%= link_to(reason, off_days_path(team_member_id: @team_member.id, off_day: @date, reason: reason), method: :post) %>
   <% end %>
 <% end %>
