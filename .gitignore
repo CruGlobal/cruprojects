@@ -17,3 +17,4 @@
 settings.local.yml
 vendor/ruby
 database.yml
+db/schema.rb

@@ -3,7 +3,7 @@
 <% if @date < Date.today %> |
   <%= link_to('next day', rescue_team_member_path(@team_member, start_date: @date + 1.day), remote: true) %>
 <% end %>
-  <br />
+  <br /><br />
 <% if off_day = @team_member.off_days.find_by(off_day: @date) %>
   <%= link_to("Unmark as #{off_day.reason}", off_day_path(off_day), method: :delete) %>
 <% else %>
@@ -12,7 +12,7 @@
     <%= link_to(reason, off_days_path(team_member_id: @team_member.id, off_day: @date, reason: reason), method: :post) %>
   <% end %>
 <% end %>
-
+<% if current_user.leader? %>
 <table border="0" cellpadding="5">
   <tr>
     <th>Time Spent</th>
@@ -45,3 +45,4 @@
   </tfoot>
 
 </table>
+<% end %>

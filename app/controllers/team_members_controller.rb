@@ -4,7 +4,9 @@ class TeamMembersController < ApplicationController
   def rescue
     @date = params[:start_date] ? Date.parse(params[:start_date]) : Date.today
 
-    @rows = RescueTime.new(@team_member).data(@date, @date)
+    if current_user.leader?
+      @rows = RescueTime.new(@team_member).data(@date, @date)
+    end
   end
 
   private

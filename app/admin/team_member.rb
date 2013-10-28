@@ -5,13 +5,14 @@ ActiveAdmin.register TeamMember do
       f.input :github_login
       f.input :rescue_time_token
       f.input :team
+      f.input :leader
     end
     f.actions
   end
 
   controller do
     def permitted_params
-      params.permit team_member: [:rescue_time_token, :github_login, :name, :team_id]
+      params.permit team_member: [:rescue_time_token, :github_login, :name, :team_id, :leader]
     end
   end
 end

@@ -27,4 +27,9 @@ class ApplicationController < ActionController::Base
     Octokit::Client.new :access_token => token
   end
   helper_method :github
+
+  def current_user
+    @current_user ||= TeamMember.find_by(github_login: session[:user])
+  end
+  helper_method :current_user
 end
