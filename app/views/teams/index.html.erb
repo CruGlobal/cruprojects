@@ -91,4 +91,8 @@ Week of <%= @start_date.to_s(:long) %>
 <% if @start_date < Date.today.beginning_of_week(:sunday) %>
   <%= link_to('Next week', teams_path(start_date: @start_date + 1.week), style: 'float:right') %>
 <% end %>
-
+<script type="text/javascript" charset="utf-8">
+  setTimeout(function() {
+    document.location = '/teams'
+  }, 600000);
+</script>

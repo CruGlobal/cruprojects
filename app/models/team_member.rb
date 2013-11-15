@@ -50,7 +50,7 @@ class TeamMember < ActiveRecord::Base
           if acting_day >= Date.yesterday
             # use the data from the API
             if rows && rows[day]
-              rows[day].group_by {|r| r[4]}.each do |category, cat_rows|
+              rows[day].group_by {|r| r[3]}.each do |category, cat_rows|
                 cat_total = cat_rows.sum {|r| r[1]}
                 day_cat = rescue_time_category_days.where(day: day, category: category).first_or_create
                 day_cat.update(amount: cat_total)
