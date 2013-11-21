@@ -2,7 +2,7 @@ module ApplicationHelper
   def amount_to_color(amount)
     case
     when round(amount) < 4.0
-      'white'
+      'gray'
     when round(amount) >= 4.0 && round(amount) < 5.0
       'blue'
     when round(amount) >= 5.0 && round(amount) < 6.0
