@@ -4,11 +4,11 @@ module ApplicationHelper
     when round(amount) < 4.0
       'gray'
     when round(amount) >= 4.0 && round(amount) < 5.0
-      'blue'
+      'yellow'
     when round(amount) >= 5.0 && round(amount) < 6.0
       'green'
     when round(amount) >= 6.0 && round(amount) < 7.0
-      'yellow'
+      'blue'
     else
       'red'
     end
