@@ -1,7 +1,7 @@
 class ReposController < ApplicationController
   def index
     github.auto_paginate = true
-    @orgs = {'AgapeEurope' => [],'CruGlobal' => []}
+    @orgs = {'AgapeEurope' => [],'CruGlobal' => [], 'PowerToChange' => []}
     @orgs.keys.each do |org_name|
       res = github.paginate(github.org(org_name).rels[:repos].href)
       @orgs[org_name] = res.sort_by(&:name)
