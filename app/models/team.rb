@@ -5,7 +5,7 @@ class Team < ActiveRecord::Base
 
     team_days[id] = {}
     marches[id] = {}
-    team_members.each do |member|
+    team_members.order('leader desc').each do |member|
       member.load_data(events, marches, team_days, current_token, start_date, end_date)
     end
     team_days[id][:cumulative] = 0
