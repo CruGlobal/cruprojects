@@ -1,5 +1,5 @@
 class Team < ActiveRecord::Base
-  has_many :team_members, inverse_of: :team
+  has_many :team_members, -> { order('leader desc') }, inverse_of: :team
 
   def load_data(events, marches, team_days, current_token, start_date, end_date)
 
