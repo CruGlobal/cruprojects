@@ -16,6 +16,9 @@ class TeamMembersController < ApplicationController
     @end_date = Date.yesterday
 
     @member_summary = Rails.cache.fetch(['member_summary', @start_date])
+    @commit_summary = Rails.cache.fetch(['commit_summary', @start_date]) do
+      GithubCommit.group(:team_member_id).order("count(*) desc").count
+    end
 
     unless @member_summary
       @events = {}
@@ -43,8 +46,6 @@ class TeamMembersController < ApplicationController
     end
 
     @member_summary = Hash[@member_summary.sort_by { |id, amount| amount }.reverse]
-
-
   end
 
   private

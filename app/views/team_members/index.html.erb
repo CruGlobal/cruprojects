@@ -1,15 +1,40 @@
 <h2><%= Time.now.year %> YTD</h2>
-<% @member_summary.each do |id, amount| %>
-  <% team_member = TeamMember.find(id) %>
-  <div style="border:1px solid black; margin:10px; padding: 10px">
-    <h3>
-      <%= link_to(team_member.name, rescue_team_member_path(team_member), remote: true) %>
-      <% if @member_summary[team_member.id] %>
-        <i class="fa fa-circle" style="color:<%= amount_to_color(@member_summary[team_member.id]) %>"></i> <%= round(@member_summary[team_member.id], 2) %>
-      <% end %>
-    </h3>
-  </div>
-<% end %>
+<style>
+table {
+  border-collapse: collapse;
+  margin: 10px;
+}
+
+table, th, td {
+  border: 1px solid black;
+  padding: 10px;
+}
+</style>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th><%= link_to('Hours', team_members_path(sort: 'hours')) %></th>
+    <th><%= link_to('Commits', team_members_path(sort: 'commits')) %></th>
+  </tr>
+  <% collection = params[:sort] == 'commits' ? @commit_summary : @member_summary %>
+  <% collection.each do |id, amount| %>
+    <% team_member = TeamMember.find(id) %>
+    <tr style="border:1px solid black; margin:10px; padding: 10px">
+      <td>
+        <%= team_member.name %>
+      </td>
+      <td>
+        <% if @member_summary[team_member.id] %>
+          <i class="fa fa-circle" style="color:<%= amount_to_color(@member_summary[team_member.id]) %>"></i> <%= round(@member_summary[team_member.id], 2) %>
+        <% end %>
+      </td>
+      <td>
+        <%= number_with_delimiter(@commit_summary[team_member.id]) %>
+      </td>
+    </tr>
+  <% end %>
+</table>
 
 <%= link_to('Back to dashboard', teams_path) %>
 
