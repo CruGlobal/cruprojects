@@ -21,6 +21,10 @@ module Github
     # config.i18n.default_locale = :de
     config.from_file 'settings.yml'
 
-    config.cache_store = :dalli_store
+    begin
+      config.cache_store = :dalli_store, YAML.load_file("#{Rails.root}/config/memcached.yml")[Rails.env]['host']
+    rescue
+      config.cache_store = :dalli_store, '127.0.0.1'
+    end
   end
 end
