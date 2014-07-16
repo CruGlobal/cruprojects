@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 4.1.0'
 
-gem 'activeadmin', git: 'git@github.com:gregbell/active_admin.git'
+gem 'activeadmin', git: 'https://github.com/gregbell/active_admin.git'
 
 gem 'mysql2'
 gem 'jquery-ui-rails'
