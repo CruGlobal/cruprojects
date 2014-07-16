@@ -8,7 +8,7 @@ Week of <%= @start_date.to_s(:long) %>
         <% if @team_days[team.id] %>
           <% active_days_count = @team_days[team.id].select {|day, hours| hours.to_f > 1}.length %>
           <% if active_days_count > 0 %>
-            <i class="icon-circle" style="color:<%= amount_to_color(@team_days[team.id][:cumulative]) %>" title="<%= round(@team_days[team.id][:cumulative]) %>"></i>
+            <i class="fa fa-circle" style="color:<%= amount_to_color(@team_days[team.id][:cumulative]) %>" title="<%= round(@team_days[team.id][:cumulative]) %>"></i>
           <% end %>
         <% end %>
       </h2>
@@ -29,7 +29,7 @@ Week of <%= @start_date.to_s(:long) %>
                     next
                    end %>
                 <% if @team_days[team.id][day] && (amount > 4 || (1..5).include?(day.wday)) %>
-                  <i class="icon-circle" style="color:<%= amount_to_color(amount) %>" title="<%= amount %>"></i>
+                  <i class="fa fa-circle" style="color:<%= amount_to_color(amount) %>" title="<%= amount %>"></i>
                 <% end %>
               </td>
             <% end %>
@@ -62,7 +62,7 @@ Week of <%= @start_date.to_s(:long) %>
               <% active_days_count = @marches[team.id][team_member.id].select {|day, hours| hours.to_f > 0.2}.length %>
               <% if active_days_count > 0 %>
                 <% avg = @marches[team.id][team_member.id].sum {|day, hours| hours} / active_days_count %>
-                <i class="icon-circle" style="color:<%= amount_to_color(avg) %>" title="<%= round(avg) %>"></i>
+                <i class="fa fa-circle" style="color:<%= amount_to_color(avg) %>" title="<%= round(avg) %>"></i>
               <% end %>
             <% end %>
           </h3>

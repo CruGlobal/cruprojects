@@ -10,7 +10,7 @@
  *
  *= require_self
  *= require font-awesome
- *= require jquery.ui.dialog
+ *= require jquery-ui/dialog
  *= require font-awesome
  *= require general
  */
