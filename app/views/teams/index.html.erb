@@ -1,4 +1,5 @@
-Week of <%= @start_date.to_s(:long) %>
+Week of <%= @start_date.to_s(:long) %> | 
+<%= link_to('Click here for YTD summary', team_members_path) %>
 <table>
 <% @teams.each do |team| %>
   <tr style="padding-bottom:50px">

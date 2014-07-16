@@ -14,7 +14,7 @@ module ApplicationHelper
     end
   end
 
-  def round(num)
-    number_with_precision(num, precision: 1).to_f
+  def round(num, precision = 1)
+    number_with_precision(num, precision: precision).to_f
   end
 end

@@ -9,7 +9,7 @@ class TeamMember < ActiveRecord::Base
   SOFTWARE_DEV = ['General Software Development', 'Systems Operations', 'Data Modeling & Analysis', 'Quality Assurance', 'Project Management',
                   'Editing & IDEs', 'Design & Planning', 'Troubleshooting']
 
-  def load_data(events, marches, team_days, current_token, start_date, end_date)
+  def load_data(events = {}, marches = {}, team_days = {}, current_token = access_token, start_date, end_date)
     unless events[id]
       # github commits
       begin
@@ -29,7 +29,8 @@ class TeamMember < ActiveRecord::Base
     # rescue time results for software dev
     begin
       if rescue_time_token.present?
-        marches[team.id][id] = {}
+        marches[team_id] ||= {}
+        marches[team_id][id] = {}
         rows = RescueTime.new(self).data(start_date, end_date).group_by {|r| Date.parse(r[0]) }
 
         start_date.step(end_date) do |day|
@@ -66,10 +67,11 @@ class TeamMember < ActiveRecord::Base
 
           amount = ((coding / 3600) * 10).to_i / 10.0
           if amount > 0.2
-            marches[team.id][id][acting_day] ||= 0
-            marches[team.id][id][acting_day] += amount
-            team_days[team.id][acting_day] ||= 0
-            team_days[team.id][acting_day] += amount
+            marches[team_id][id][acting_day] ||= 0
+            marches[team_id][id][acting_day] += amount
+            team_days[team_id] ||= {}
+            team_days[team_id][acting_day] ||= 0
+            team_days[team_id][acting_day] += amount
           end
         end
       end

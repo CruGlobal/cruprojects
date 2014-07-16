@@ -1,0 +1,15 @@
+<h2><%= Time.now.year %> YTD</h2>
+<% @member_summary.each do |id, amount| %>
+  <% team_member = TeamMember.find(id) %>
+  <div style="border:1px solid black; margin:10px; padding: 10px">
+    <h3>
+      <%= link_to(team_member.name, rescue_team_member_path(team_member), remote: true) %>
+      <% if @member_summary[team_member.id] %>
+        <i class="fa fa-circle" style="color:<%= amount_to_color(@member_summary[team_member.id]) %>"></i> <%= round(@member_summary[team_member.id], 2) %>
+      <% end %>
+    </h3>
+  </div>
+<% end %>
+
+<%= link_to('Back to dashboard', teams_path) %>
+
