@@ -16,6 +16,9 @@ table, th, td {
     <th>Name</th>
     <th><%= link_to('Hours', team_members_path(sort: 'hours')) %></th>
     <th><%= link_to('Commits', team_members_path(sort: 'commits')) %></th>
+    <th>Admin</th>
+    <th>Sick</th>
+    <th>Vacation</th>
   </tr>
   <% collection = params[:sort] == 'commits' ? @commit_summary : @member_summary %>
   <% collection.each do |id, amount| %>
@@ -31,6 +34,15 @@ table, th, td {
       </td>
       <td>
         <%= number_with_delimiter(@commit_summary[team_member.id]) %>
+      </td>
+      <td>
+        <%= @off_days[team_member.id]['admin'] %>
+      </td>
+      <td>
+        <%= @off_days[team_member.id]['sick'] %>
+      </td>
+      <td>
+        <%= @off_days[team_member.id]['vacation'] %>
       </td>
     </tr>
   <% end %>

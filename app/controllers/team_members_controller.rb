@@ -15,6 +15,14 @@ class TeamMembersController < ApplicationController
     @start_date = params[:start_date] ? Date.parse(params[:start_date]) : Date.today.beginning_of_year
     @end_date = Date.yesterday
 
+
+    @off_days = Rails.cache.fetch(['off_days', @start_date]) do
+      counts = {}
+      TeamMember.all.each do |tm|
+        counts[tm.id] = tm.off_days.group(:reason).count
+      end
+      counts
+    end
     @member_summary = Rails.cache.fetch(['member_summary', @start_date])
     @commit_summary = Rails.cache.fetch(['commit_summary', @start_date]) do
       GithubCommit.group(:team_member_id).order("count(*) desc").count
