@@ -51,6 +51,8 @@ class TeamMembersController < ApplicationController
 
       expiration_time = 1.day
       Rails.cache.write(['member_summary', @start_date], @member_summary, expires_in: expiration_time)
+      Rails.cache.write(['commit_summary', @start_date], @commit_summary, expires_in: expiration_time)
+      Rails.cache.write(['team_days', @start_date], @team_days, expires_in: expiration_time)
     end
 
     @member_summary = Hash[@member_summary.sort_by { |id, amount| amount }.reverse]
