@@ -16,15 +16,18 @@ class TeamMembersController < ApplicationController
     @end_date = Date.yesterday
 
 
-    @off_days = Rails.cache.fetch(['off_days', @start_date]) do
+    @off_days = Rails.cache.fetch(['off_days', @start_date], expires_in: expiration_time) do
       counts = {}
       TeamMember.all.each do |tm|
         counts[tm.id] = tm.off_days.group(:reason).count
       end
       counts
     end
+    
+    expiration_time = 1.day
+    
     @member_summary = Rails.cache.fetch(['member_summary', @start_date])
-    @commit_summary = Rails.cache.fetch(['commit_summary', @start_date]) do
+    @commit_summary = Rails.cache.fetch(['commit_summary', @start_date], expires_in: expiration_time) do
       GithubCommit.group(:team_member_id).order("count(*) desc").count
     end
 
@@ -49,7 +52,6 @@ class TeamMembersController < ApplicationController
         @member_summary[id] = marches.sum { |date, amount| amount } / marches.keys.length
       end
 
-      expiration_time = 1.day
       Rails.cache.write(['member_summary', @start_date], @member_summary, expires_in: expiration_time)
     end
 
