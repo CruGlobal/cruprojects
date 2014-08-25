@@ -16,6 +16,8 @@ class TeamMembersController < ApplicationController
     @end_date = Date.yesterday
 
 
+    expiration_time = 1.day
+    
     @off_days = Rails.cache.fetch(['off_days', @start_date], expires_in: expiration_time) do
       counts = {}
       TeamMember.all.each do |tm|
@@ -23,8 +25,6 @@ class TeamMembersController < ApplicationController
       end
       counts
     end
-    
-    expiration_time = 1.day
     
     @member_summary = Rails.cache.fetch(['member_summary', @start_date])
     @commit_summary = Rails.cache.fetch(['commit_summary', @start_date], expires_in: expiration_time) do
