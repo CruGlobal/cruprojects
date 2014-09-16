@@ -9,8 +9,10 @@ module ApplicationHelper
       'green'
     when round(amount) >= 6.0 && round(amount) < 7.0
       'orange'
-    else
+    when round(amount) >= 7.0 && round(amount) < 8.0
       'red'
+    else
+      'black'
     end
   end
 
