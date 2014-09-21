@@ -27,9 +27,7 @@ class TeamMembersController < ApplicationController
     end
     
     @member_summary = Rails.cache.fetch(['member_summary', @start_date])
-    @commit_summary = Rails.cache.fetch(['commit_summary', @start_date], expires_in: expiration_time) do
-      GithubCommit.group(:team_member_id).order("count(*) desc").count
-    end
+    @commit_summary = GithubCommit.group(:team_member_id).order("count(*) desc").count
 
     unless @member_summary
       @events = {}
