@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   def index
-    @teams = Team.where("name <> 'WMD - Todd'")
+    @teams = Team.all
 
     @start_date = params[:start_date] ? Date.parse(params[:start_date]) : Date.today.beginning_of_week(:sunday)
 
