@@ -1,7 +1,8 @@
-Week of <%= @start_date.to_s(:long) %> | 
+Week of <%= @start_date.to_s(:long) %> |
 <%= link_to('Click here for YTD summary', team_members_path) %>
 <table>
 <% @teams.each do |team| %>
+  <% current_team = current_user.team_id == team.id %>
   <% next unless @team_days[team.id] %>
   <tr style="padding-bottom:50px">
     <td>
@@ -60,7 +61,7 @@ Week of <%= @start_date.to_s(:long) %> |
         <div style="border:1px solid black; margin:10px; padding: 10px">
           <h3>
             <%= link_to(team_member.name, rescue_team_member_path(team_member), remote: true) %>
-            <% if @marches[team.id][team_member.id] %>
+            <% if @marches[team.id][team_member.id] && current_team %>
               <% active_days_count = @marches[team.id][team_member.id].select {|day, hours| hours.to_f > 0.2}.length %>
               <% if active_days_count > 0 %>
                 <% avg = @marches[team.id][team_member.id].sum {|day, hours| hours} / active_days_count %>
@@ -70,7 +71,7 @@ Week of <%= @start_date.to_s(:long) %> |
           </h3>
           <div id="js-rescue_details_<%= team_member.github_login %>" style="display:none"></div>
           <div>
-            <%= render 'rescue_time', team_member: team_member, team: team if @marches[team.id] %>
+            <%= render 'rescue_time', team_member: team_member, team: team if @marches[team.id] && current_team %>
           </div>
           <div>
             <% if @events[team_member.id] %>

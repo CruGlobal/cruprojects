@@ -35,7 +35,7 @@ class ApplicationController < ActionController::Base
   helper_method :github
 
   def current_user
-    @current_user ||= TeamMember.find_by(github_login: session[:user])
+    @current_user ||= (TeamMember.find_by(github_login: session[:user]) || TeamMember.new)
   end
   helper_method :current_user
 end
