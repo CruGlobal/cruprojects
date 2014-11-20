@@ -1,12 +1,13 @@
 class Team < ActiveRecord::Base
   has_many :team_members, -> { order('leader desc') }, inverse_of: :team
 
-  def load_data(events, marches, team_days, current_token, start_date, end_date)
+  def load_data(events, marches, work, team_days , current_token, start_date, end_date)
 
     team_days[id] = {}
     marches[id] = {}
+    work[id] = {}
     team_members.order('leader desc').each do |member|
-      member.load_data(events, marches, team_days, current_token, start_date, end_date)
+      member.load_data(events, marches, work, team_days, current_token, start_date, end_date)
     end
     team_days[id][:cumulative] = 0
     days = 0

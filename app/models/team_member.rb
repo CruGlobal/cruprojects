@@ -6,10 +6,16 @@ class TeamMember < ActiveRecord::Base
 
   validates :team_id, presence: true
 
-  SOFTWARE_DEV = ['General Software Development', 'Systems Operations', 'Data Modeling & Analysis', 'Quality Assurance', 'Project Management',
-                  'Editing & IDEs', 'Design & Planning', 'Troubleshooting']
+  SOFTWARE_DEV = ['General Software Development', 'Systems Operations', 'Data Modeling & Analysis', 'Quality Assurance',
+                  'Project Management', 'Editing & IDEs', 'Design & Planning', 'Troubleshooting', 'General Utilities',
+                  'Virtualization']
 
-  def load_data(events = {}, marches = {}, team_days = {}, current_token = access_token, start_date, end_date)
+  WORK_CATS = ['General Business', 'Email', 'Meetings', 'Instant Message', 'Voice Chat', 'Writing',
+               'General Communication & Scheduling', 'General Reference & Learning', 'Engineering & Technology',
+               'Calendars', 'Administration', 'Operations', 'Gmail', 'Meeting (offline)', 'Customer Relations',
+               'General Design & Composition', 'Research', 'Writing']
+
+  def load_data(events = {}, marches = {}, work = {}, team_days = {}, current_token = access_token, start_date, end_date)
     unless events[id]
       # github commits
       begin
@@ -31,6 +37,8 @@ class TeamMember < ActiveRecord::Base
       if rescue_time_token.present?
         marches[team_id] ||= {}
         marches[team_id][id] = {}
+        work[team_id] ||= {}
+        work[team_id][id] = {}
         rows = RescueTime.new(self).data(start_date, end_date).group_by {|r| Date.parse(r[0]) }
 
         start_date.step(end_date) do |day|
@@ -45,9 +53,10 @@ class TeamMember < ActiveRecord::Base
                          day
                        end
 
-          next if off_days.find_by(off_day: acting_day)
+          off_day = off_days.find_by(off_day: acting_day)
 
           coding = 0.0
+          work_time = 0.0
           if acting_day >= Date.yesterday
             # use the data from the API
             if rows && rows[day]
@@ -55,23 +64,32 @@ class TeamMember < ActiveRecord::Base
                 cat_total = cat_rows.sum {|r| r[1]}
                 day_cat = rescue_time_category_days.where(day: day, category: category).first_or_create
                 day_cat.update(amount: cat_total)
-                if SOFTWARE_DEV.include?(category)
+                case
+                when SOFTWARE_DEV.include?(category)
                   coding += cat_total
+                when WORK_CATS.include?(category)
+                  work_time += cat_total
                 end
               end
             end
           else
             #use the data in the db
             coding += rescue_time_category_days.where(day: day, category: SOFTWARE_DEV).sum(:amount)
+            work_time += rescue_time_category_days.where(day: day, category: WORK_CATS).sum(:amount)
           end
 
-          amount = ((coding / 3600) * 10).to_i / 10.0
-          if amount > 0.2
-            marches[team_id][id][acting_day] ||= 0
-            marches[team_id][id][acting_day] += amount
-            team_days[team_id] ||= {}
-            team_days[team_id][acting_day] ||= 0
-            team_days[team_id][acting_day] += amount
+          coding_amount = ((coding / 3600) * 10).to_i / 10.0
+          work_amount = ((work_time / 3600) * 10).to_i / 10.0
+          if work_amount + coding_amount > 0.2
+            work[team_id][id][acting_day] ||= 0
+            work[team_id][id][acting_day] += work_amount + coding_amount
+            unless off_day
+              marches[team_id][id][acting_day] ||= 0
+              marches[team_id][id][acting_day] += coding_amount
+              team_days[team_id] ||= {}
+              team_days[team_id][acting_day] ||= 0
+              team_days[team_id][acting_day] += coding_amount
+            end
           end
         end
       end

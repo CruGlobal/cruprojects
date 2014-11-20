@@ -32,12 +32,13 @@ class TeamMembersController < ApplicationController
     unless @member_summary
       @events = {}
       @marches = {}
+      @work = {}
       @team_days = {}
 
       token = TeamMember.where("access_token is not null").first.access_token
 
       @teams.each do |team|
-        team.load_data(@events, @marches, @team_days, token, @start_date, @end_date)
+        team.load_data(@events, @marches, @work, @team_days, token, @start_date, @end_date)
       end
 
       @member_marches = {}

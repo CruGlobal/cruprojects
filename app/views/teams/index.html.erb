@@ -2,7 +2,7 @@ Week of <%= @start_date.to_s(:long) %> |
 <%= link_to('Click here for YTD summary', team_members_path) %>
 <table>
 <% @teams.each do |team| %>
-  <% current_team = current_user.team_id == team.id %>
+  <% current_team = (current_user.team_id == team.id || current_user.leader?) %>
   <% next unless @team_days[team.id] %>
   <tr style="padding-bottom:50px">
     <td>
