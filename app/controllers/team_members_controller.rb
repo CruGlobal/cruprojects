@@ -6,6 +6,7 @@ class TeamMembersController < ApplicationController
 
     if current_user.leader?
       @rows = RescueTime.new(@team_member).data(@date, @date)
+      @details = RescueTime.new(@team_member).detail(@date, @date)
     end
   end
 

@@ -15,3 +15,8 @@ $(document).on 'ajax:before', 'a', ->
 
 $(document).ajaxComplete ->
   $.dash.hideSpinner()
+
+$(document).on 'click', '.toggle_view', ->
+  id = $(this).data('id')
+  $('#categories_' + id).toggle()
+  $('#detail_' + id).toggle()

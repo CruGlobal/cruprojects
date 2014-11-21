@@ -57,7 +57,7 @@ class TeamMember < ActiveRecord::Base
 
           coding = 0.0
           work_time = 0.0
-          if acting_day >= Date.yesterday
+          # if acting_day >= Date.yesterday
             # use the data from the API
             if rows && rows[day]
               rows[day].group_by {|r| r[3]}.each do |category, cat_rows|
@@ -72,11 +72,11 @@ class TeamMember < ActiveRecord::Base
                 end
               end
             end
-          else
+          # else
             #use the data in the db
-            coding += rescue_time_category_days.where(day: day, category: SOFTWARE_DEV).sum(:amount)
-            work_time += rescue_time_category_days.where(day: day, category: WORK_CATS).sum(:amount)
-          end
+            # coding += rescue_time_category_days.where(day: day, category: SOFTWARE_DEV).sum(:amount)
+            # work_time += rescue_time_category_days.where(day: day, category: WORK_CATS).sum(:amount)
+          # end
 
           coding_amount = ((coding / 3600) * 10).to_i / 10.0
           work_amount = ((work_time / 3600) * 10).to_i / 10.0
