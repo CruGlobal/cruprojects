@@ -49,7 +49,7 @@ class TeamMembersController < ApplicationController
 
       @member_summary = {}
       @member_marches.each do |id, marches|
-        @member_summary[id] = marches.sum { |date, amount| amount } / marches.keys.length
+        @member_summary[id] = marches.keys.length > 0 ? marches.sum { |date, amount| amount } / marches.keys.length : 0
       end
 
       Rails.cache.write(['member_summary', @start_date], @member_summary, expires_in: expiration_time)
