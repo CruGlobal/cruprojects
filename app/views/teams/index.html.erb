@@ -56,7 +56,7 @@ Week of <%= @start_date.to_s(:long) %> |
     </td>
 
     <% team.team_members.each do |team_member| %>
-      <% display_number = (current_user.id == team_member.id || current_user.leader?) %>
+      <% display_number = (current_user.id == team_member.id  || team_member.team_id == 1) %>
       <td>
         <div style="border:1px solid black; margin:10px; padding: 10px">
           <h3>
