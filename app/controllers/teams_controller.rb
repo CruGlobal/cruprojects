@@ -9,7 +9,7 @@ class TeamsController < ApplicationController
     @events = Rails.cache.fetch(['events', params[:start_date]])
     @marches = Rails.cache.fetch(['marches', params[:start_date]])
     @work = Rails.cache.fetch(['work', params[:start_date]])
-    @team_days = Rails.cache.fetch(['team_days', params[:start_date]])
+    @team_days = Rails.cache.fetch(['team_days', params[:start_date], 'v1'])
 
     @end_date = @start_date + 6.days
 

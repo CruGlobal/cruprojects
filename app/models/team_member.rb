@@ -88,7 +88,7 @@ class TeamMember < ActiveRecord::Base
               marches[team_id][id][acting_day] += coding_amount
               team_days[team_id] ||= {}
               team_days[team_id][acting_day] ||= 0
-              team_days[team_id][acting_day] += coding_amount
+              team_days[team_id][acting_day] += coding_amount unless leader?
             end
           end
         end

@@ -26,7 +26,7 @@ Week of <%= @start_date.to_s(:long) %> |
               <td>
                 <% amount = (@team_days[team.id][day] || 0)
                    if amount > 0
-                     amount = round(amount / @marches[team.id].select {|member, days| days[day].to_f > 0}.length)
+                     amount = round(amount / @marches[team.id].select {|member, days| !TeamMember.find(member).leader? && days[day].to_f > 0}.length)
                    else
                     next
                    end %>
@@ -41,7 +41,7 @@ Week of <%= @start_date.to_s(:long) %> |
               <td>
                 <% amount = (@team_days[team.id][day] || 0)
                    if amount > 0
-                     amount = round(amount / @marches[team.id].select {|member, days| days[day].to_f > 0}.length)
+                     amount = round(amount / @marches[team.id].select {|member, days| !TeamMember.find(member).leader? && days[day].to_f > 0}.length)
                    else
                     next
                    end %>
