@@ -53,6 +53,7 @@ angular.module('cruprojects')
   that.options = {
     animateMap: true,
     animateMapFrequency: 5000,
+    polling: true,
     pollingFrequency: 60000
   };
 
@@ -81,22 +82,34 @@ angular.module('cruprojects')
 
   that.startPollingForApps = function(apps) {
 
+    var currentAppIndex = 0;
+    var appPollingOffset = that.options.pollingFrequency / apps.length;
     for (app in apps) {
 
+      setTimeout(function() {
+        that.pollForApp(app);
+      }, currentAppIndex * appPollingOffset);
 
+      numberOfApps++;
     }
 
   };
 
   that.pollForApp = function(app) {
 
-    that.removeAppFromMap(app, that.map);
+    setTimeout(function() {
+      that.removeAppFromMap(app, that.map);
 
-    that.getActiveUsers(app).then(function(appWithLocation){
-      that.putAppOnMap(appWithLocation)
-    }, function(error) {
-      //TODO: do something intelligent with timeout error
-    });
+      that.getActiveUsers(app).then(function (appWithLocation) {
+        that.putAppOnMap(appWithLocation)
+      }, function (error) {
+        //TODO: do something intelligent with timeout error
+      });
+
+      if (that.options.polling) {
+        that.pollForApp(app);
+      }
+    }, that.options.pollingFrequency);
 
   };
 
