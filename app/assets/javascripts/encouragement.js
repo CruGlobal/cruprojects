@@ -39,14 +39,14 @@ angular.module('cruprojects')
       name: 'God Tools',
       icon: 'godtools.png',
       totalActiveUsers: 0,
-      activeUsers: []
+      activeUsersByLocation: []
     },
     {
       id: 59955759,
       name: 'MPDX',
       icon: 'mpdx.png',
       totalActiveUsers: 0,
-      activeUsers: []
+      activeUsersByLocation: []
     }
   ];
 
@@ -155,7 +155,7 @@ angular.module('cruprojects')
           }
         }
 
-        app.activeUsers = [];
+        app.activeUsersByLocation = [];
         var completedLocations = 0;
         for(row in response.rows) {
 
@@ -185,7 +185,7 @@ angular.module('cruprojects')
 
           });
 
-          app.activeUsers.push(usersAtLocation);
+          app.activeUsersByLocation.push(usersAtLocation);
         }
 
       });
@@ -193,23 +193,23 @@ angular.module('cruprojects')
     return deferred.promise;
   };
 
-  that.getLocation = function(activeUsers) {
+  that.getLocation = function(usersAtLocation) {
 
     var deferred = $q.defer();
 
-    if (that.locationCache[activeUsers.id]) {
-      deferred.resolve(that.locationCache[activeUsers.id]);
+    if (that.locationCache[usersAtLocation.id]) {
+      deferred.resolve(that.locationCache[usersAtLocation.id]);
       return deferred.promise;
     }
 
     //TODO: get real instance of geocoder
     var geocoder = new google.maps.Geocoder();
-    var address = activeUsers.city + ', ' + activeUsers.region + ' ' + activeUsers.country;
+    var address = usersAtLocation.city + ', ' + usersAtLocation.region + ' ' + usersAtLocation.country;
     geocoder.geocode({'address': address}, function(results, status) {
 
       if (status === google.maps.GeocoderStatus.OK) {
-        that.locationCache[activeUsers.id] = results[0].geometry.location;
-        deferred.resolve(that.locationCache[activeUsers.id]);
+        that.locationCache[usersAtLocation.id] = results[0].geometry.location;
+        deferred.resolve(that.locationCache[usersAtLocation.id]);
       } else {
         deferred.reject({message:'Geocode was not successful for the following reason: ' + status});
       }
@@ -221,18 +221,19 @@ angular.module('cruprojects')
 
   that.putAppOnMap = function(app, map) {
 
+    map = map || that.map;
     var marker;
 
-    for (users in app.activeUsers) {
+    for (usersAtLocation in app.activeUsersByLocation) {
 
-      if (users.location) {
+      if (usersAtLocation.location) {
         //TODO: get real instance of marker
-        users.marker = new google.maps.Marker({
-          map: that.map,
+        usersAtLocation.marker = new google.maps.Marker({
+          map: map,
           icon: app.icon,
-          label: users.activeUsers,
+          label: usersAtLocation.activeUsers,
           draggable: false,
-          position: users.location
+          position: usersAtLocation.location
         });
       }
 
@@ -240,15 +241,15 @@ angular.module('cruprojects')
 
   };
 
-  that.removeAppFromMap = function(app, map) {
+  that.removeAppFromMap = function(app) {
 
     var marker;
 
-    for (users in app.activeUsers) {
+    for (usersAtLocation in app.activeUsersByLocation) {
 
-      if (users.marker) {
-        users.marker.setMap(null);
-        delete users.marker;
+      if (usersAtLocation.marker) {
+        usersAtLocation.marker.setMap(null);
+        delete usersAtLocation.marker;
       }
 
     }
