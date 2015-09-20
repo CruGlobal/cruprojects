@@ -25,17 +25,6 @@ angular.module('cruprojects')
 .controller('EncouragmentCtrl', function($q) {
   var that = this;
 
-  //TODO: move to approprate place
-  /**
-   * Authorize the user immediately if the user has already granted access.
-   * If no access has been created, render an authorize button inside the
-   * element with the ID "embed-api-auth-container".
-   */
-  gapi.analytics.auth.authorize({
-    container: 'embed-api-auth-container',
-    clientid: 'REPLACE WITH YOUR CLIENT ID'
-  });
-
   //TODO: get real instance of map
   that.map = new google.maps.Map(document.getElementById('map'), {
     zoom: 2,
@@ -70,6 +59,17 @@ angular.module('cruprojects')
   //TODO: run through all the apps removing existing markers removeAppFromMap > getting active users getActiveUsers > putting new markers on map putAppOnMap
   //use setTimeout to make sure the app requests are spaced out.
   that.start = function() {
+
+    /**
+     * Authorize the user immediately if the user has already granted access.
+     * If no access has been created, render an authorize button inside the
+     * element with the ID "embed-api-auth-container".
+     */
+    gapi.analytics.auth.authorize({
+      container: 'embed-api-auth-container',
+      clientid: 'REPLACE WITH YOUR CLIENT ID'
+    });
+
     // Wait until the user is authorized.
     if (gapi.analytics.auth.isAuthorized()) {
       that.startPollingForApps(that.apps);
