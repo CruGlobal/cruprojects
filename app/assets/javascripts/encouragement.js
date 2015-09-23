@@ -19,7 +19,7 @@ angular.module('cruprojects')
       encouragement.start();
     });
   }
-]);
+])
   //TODO: import map and ga real time clients as services
   //TODO: split map into realtime-ga-map directive
 .controller('EncouragmentCtrl', function($q) {
@@ -196,9 +196,10 @@ angular.module('cruprojects')
   that.getLocation = function(usersAtLocation) {
 
     var deferred = $q.defer();
+    var location = localStorage.getItem(usersAtLocation.id);
 
-    if (that.locationCache[usersAtLocation.id]) {
-      deferred.resolve(that.locationCache[usersAtLocation.id]);
+    if (location) {
+      deferred.resolve(location);
       return deferred.promise;
     }
 
@@ -208,8 +209,9 @@ angular.module('cruprojects')
     geocoder.geocode({'address': address}, function(results, status) {
 
       if (status === google.maps.GeocoderStatus.OK) {
-        that.locationCache[usersAtLocation.id] = results[0].geometry.location;
-        deferred.resolve(that.locationCache[usersAtLocation.id]);
+        location = results[0].geometry.location;
+        localStorage.setItem(usersAtLocation.id, location);
+        deferred.resolve(location);
       } else {
         deferred.reject({message:'Geocode was not successful for the following reason: ' + status});
       }
