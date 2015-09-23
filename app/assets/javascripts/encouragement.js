@@ -156,7 +156,8 @@ angular.module('cruprojects')
         }
 
         app.activeUsersByLocation = [];
-        var completedLocations = 0;
+        var locationPromises = [];
+
         for(row in response.rows) {
 
           var usersAtLocation = {
@@ -167,26 +168,23 @@ angular.module('cruprojects')
             activeUsers: row[activeUserHeader]
           };
 
-          that.getLocation(usersAtLocation).then(function(location){
+          locationPromise = that.getLocation(usersAtLocation);
+          locationPromises.push(locationPromise);
+
+          locationPromise.then(function(location){
             usersAtLocation.location = location;
-            completedLocations++;
-
-            if (completedLocations == response.rows.length) {
-              deferred.resolve(app);
-            }
-
           }, function(error){
             alert(error.message);
-            completedLocations++;
-
-            if (completedLocations == response.rows.length) {
-              deferred.resolve(app);
-            }
-
           });
 
           app.activeUsersByLocation.push(usersAtLocation);
         }
+
+        $q.all(locationPromises).then(function(allLocations) {
+          deferred.resolve(app);
+        }, function(error) {
+          alert(error);
+        });
 
       });
 
