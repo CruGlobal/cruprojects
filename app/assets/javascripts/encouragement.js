@@ -2,27 +2,10 @@
 //https://github.com/googleanalytics/ga-dev-tools/blob/master/src/javascript/embed-api/components/active-users.js#L69-L87
 
 angular.module('cruprojects')
-  //TODO: figure out what really needs to be injected here
-.run([
-  'EncouragmentCtrl',
-  function (encouragement) {
-
-    // add Google Analytics Script at the end of the page
-    var gaCode = document.createTextNode('(function(w,d,s,g,js,fs){ g=w.gapi||(w.gapi={});g.analytics={q:[],ready:function(f){this.q.push(f);}}; js=d.createElement(s);fs=d.getElementsByTagName(s)[0]; js.src="https://apis.google.com/js/platform.js"; fs.parentNode.insertBefore(js,fs);js.onload=function(){g.load("analytics");}; }(window,document,"script"));');
-    var scriptTag = document.createElement('script');
-    scriptTag.type = 'text/javascript';
-    scriptTag.appendChild(gaCode);
-    document.body.appendChild(scriptTag);
-
-    // if ga is ready -> inform service
-    gapi.analytics.ready(function () {
-      encouragement.start();
-    });
-  }
-])
+.value('googleAnalyticsAPIKey', 123)
   //TODO: import map and ga real time clients as services
   //TODO: split map into realtime-ga-map directive
-.controller('EncouragmentCtrl', function($q) {
+.controller('EncouragmentCtrl', 'googleAnalyticsAPIKey', function($q, googleAnalyticsAPIKey) {
   var that = this;
 
   //TODO: get real instance of map
@@ -68,7 +51,7 @@ angular.module('cruprojects')
      */
     gapi.analytics.auth.authorize({
       container: 'embed-api-auth-container',
-      clientid: 'REPLACE WITH YOUR CLIENT ID'
+      clientid: googleAnalyticsAPIKey
     });
 
     // Wait until the user is authorized.
@@ -103,7 +86,7 @@ angular.module('cruprojects')
       that.getActiveUsers(app).then(function (appWithLocation) {
         that.putAppOnMap(appWithLocation)
       }, function (error) {
-        //TODO: do something intelligent with timeout error
+        console.log(error.message);
       });
 
       if (that.options.polling) {
@@ -174,7 +157,7 @@ angular.module('cruprojects')
           locationPromise.then(function(location){
             usersAtLocation.location = location;
           }, function(error){
-            alert(error.message);
+
           });
 
           app.activeUsersByLocation.push(usersAtLocation);
@@ -183,7 +166,7 @@ angular.module('cruprojects')
         $q.all(locationPromises).then(function(allLocations) {
           deferred.resolve(app);
         }, function(error) {
-          alert(error);
+          deferred.reject({message: 'One of the locations for ' + app.name + ' failed due to error: ' + error});
         });
 
       });
@@ -256,4 +239,19 @@ angular.module('cruprojects')
 
   };
 
+})
+//TODO: figure out what really needs to be injected here
+.run(function (EncouragmentCtrl) {
+
+  // add Google Analytics Script at the end of the page
+  var gaCode = document.createTextNode('(function(w,d,s,g,js,fs){ g=w.gapi||(w.gapi={});g.analytics={q:[],ready:function(f){this.q.push(f);}}; js=d.createElement(s);fs=d.getElementsByTagName(s)[0]; js.src="https://apis.google.com/js/platform.js"; fs.parentNode.insertBefore(js,fs);js.onload=function(){g.load("analytics");}; }(window,document,"script"));');
+  var scriptTag = document.createElement('script');
+  scriptTag.type = 'text/javascript';
+  scriptTag.appendChild(gaCode);
+  document.body.appendChild(scriptTag);
+
+  // if ga is ready -> inform service
+  gapi.analytics.ready(function () {
+    EncouragmentCtrl.start();
+  });
 });
