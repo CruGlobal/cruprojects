@@ -105,6 +105,6 @@ Week of <%= @start_date.to_s(:long) %> |
 <% end %>
 <script type="text/javascript" charset="utf-8">
   setTimeout(function() {
-    document.location = '/teams'
+    document.location = '/teams/' + <%= @team.id %>
   }, 600000);
 </script>
