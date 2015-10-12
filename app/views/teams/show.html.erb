@@ -11,7 +11,7 @@ Week of <%= @start_date.to_s(:long) %> |
     <% end %>
 
     <div class="row">
-      <div class="col-lg-3">
+      <div class="col-md-3">
         <div class="panel panel-primary" style="font-size: 1.5em;">
           <div class="panel-heading">
             <h2 style="margin-top: 10px;">
@@ -59,20 +59,20 @@ Week of <%= @start_date.to_s(:long) %> |
         <% col = i + 2
            new_row = true if col % 4 == 0%>
         <% display_number = (current_user.id == team_member.id || current_user.leader? || (team_member.team_id == 1 && current_user.team_id == 1)) %>
-        <div class="col-lg-3">
+        <div class="col-md-3">
           <% active_days_count = nil %>
           <% active_days_count = @marches[@team.id][team_member.id].select {|day, hours| hours.to_f > 0.2}.length if @marches[@team.id][team_member.id] %>
           <% avg = @marches[@team.id][team_member.id].sum {|day, hours| hours} / active_days_count if active_days_count && active_days_count > 0 %>
           <div class="panel panel-<%= display_number ? amount_to_bs_class(avg) : 'default' %>" style="font-size: 1.5em;">
             <div class="panel-heading">
-              <h2 style="margin-top: 10px;">
+              <h3 style="margin-top: 10px;">
                 <%= link_to(team_member.name, rescue_team_member_path(team_member), remote: true) %>
                 <% if @marches[@team.id][team_member.id] && display_number %>
                   <% if active_days_count > 0 %>
                     <i class="fa fa-circle" style="color:<%= amount_to_color(avg) %>" title="<%= round(avg) %>"></i>
                   <% end %>
                 <% end %>
-              </h2>
+              </h3>
             </div>
             <div class="panel-body" style="">
               <div id="js-rescue_details_<%= team_member.github_login %>" style="display:none"></div>
