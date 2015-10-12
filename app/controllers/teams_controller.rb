@@ -30,4 +30,34 @@ class TeamsController < ApplicationController
       Rails.cache.write(['events', params[:start_date]], @events, expires_in: expiration_time)
     end
   end
+
+  def show
+    @team = Team.find(params[:id])
+
+    @start_date = params[:start_date] ? Date.parse(params[:start_date]) : Date.today.beginning_of_week(:sunday)
+
+    params[:start_date] = nil if @start_date == Date.today.beginning_of_week(:sunday)
+
+    @events = Rails.cache.fetch(['events', @team.id, params[:start_date]])
+    @marches = Rails.cache.fetch(['marches', @team.id, params[:start_date]])
+    @work = Rails.cache.fetch(['work', @team.id, params[:start_date]])
+    @team_days = Rails.cache.fetch(['team_days', @team.id, params[:start_date]])
+
+    @end_date = @start_date + 6.days
+
+    unless @events && @marches && @team_days && @work
+      @events ||= {}
+      @marches ||= {}
+      @work ||= {}
+      @team_days ||= {}
+
+      @team.load_data(@events, @marches, @work, @team_days, session[:token], @start_date, @end_date)
+
+      expiration_time = @start_date < Date.today.beginning_of_week(:sunday) ? 1.day : 10.minutes
+      Rails.cache.write(['team_days', @team.id, params[:start_date]], @team_days, expires_in: expiration_time)
+      Rails.cache.write(['marches', @team.id, params[:start_date]], @marches, expires_in: expiration_time)
+      Rails.cache.write(['work', @team.id, params[:start_date]], @work, expires_in: expiration_time)
+      Rails.cache.write(['events', @team.id, params[:start_date]], @events, expires_in: expiration_time)
+    end
+  end
 end
