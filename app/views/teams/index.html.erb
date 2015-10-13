@@ -16,7 +16,7 @@ Week of <%= @start_date.to_s(:long) %> |
   <tr style="padding-bottom:50px">
     <td>
       <h2>
-        <%= team.name %>
+        <%= link_to_if(team.id == current_user.team_id, team.name, team_path(team)) %>
         <% active_days_count = team_totals.select {|day, hours| hours.to_f > 1}.length %>
         <% if active_days_count > 0 %>
           <% cumulative = team_totals.values.inject(0) { |total, hours| total += hours } / active_days_count %>

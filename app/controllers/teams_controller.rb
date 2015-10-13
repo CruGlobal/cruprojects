@@ -34,6 +34,11 @@ class TeamsController < ApplicationController
   def show
     @team = Team.find(params[:id])
 
+    unless current_user.team_id == @team.id
+      redirect_to teams_path
+      return
+    end
+
     @start_date = params[:start_date] ? Date.parse(params[:start_date]) : Date.today.beginning_of_week(:sunday)
 
     params[:start_date] = nil if @start_date == Date.today.beginning_of_week(:sunday)
