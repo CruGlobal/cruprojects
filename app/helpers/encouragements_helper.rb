@@ -1,0 +1,2 @@
+module EncouragementsHelper
+end
