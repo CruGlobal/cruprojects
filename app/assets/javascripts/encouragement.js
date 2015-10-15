@@ -1,14 +1,13 @@
 //https://ga-dev-tools.appspot.com/embed-api/third-party-visualizations/
 //https://github.com/googleanalytics/ga-dev-tools/blob/master/src/javascript/embed-api/components/active-users.js#L69-L87
 
-angular.module('cruprojects')
+angular.module('cruprojects', [])
 .value('googleAnalyticsAPIKey', 123)
   //TODO: import map and ga real time clients as services
   //TODO: split map into realtime-ga-map directive
 .controller('EncouragmentCtrl', 'googleAnalyticsAPIKey', function($q, googleAnalyticsAPIKey) {
   var that = this;
 
-  //TODO: get real instance of map
   that.map = new google.maps.Map(document.getElementById('map'), {
     zoom: 2,
     center: {lat: 17.8786938, lng: -28.8084722},
@@ -40,8 +39,6 @@ angular.module('cruprojects')
     pollingFrequency: 60000
   };
 
-  //TODO: run through all the apps removing existing markers removeAppFromMap > getting active users getActiveUsers > putting new markers on map putAppOnMap
-  //use setTimeout to make sure the app requests are spaced out.
   that.start = function() {
 
     /**
@@ -50,7 +47,7 @@ angular.module('cruprojects')
      * element with the ID "embed-api-auth-container".
      */
     gapi.analytics.auth.authorize({
-      container: 'embed-api-auth-container',
+      container: 'google-auth-container',
       clientid: googleAnalyticsAPIKey
     });
 
@@ -241,7 +238,7 @@ angular.module('cruprojects')
 
 })
 //TODO: figure out what really needs to be injected here
-.run(function (EncouragmentCtrl) {
+.run(['EncouragmentCtrl', function (EncouragmentCtrl) {
 
   // add Google Analytics Script at the end of the page
   var gaCode = document.createTextNode('(function(w,d,s,g,js,fs){ g=w.gapi||(w.gapi={});g.analytics={q:[],ready:function(f){this.q.push(f);}}; js=d.createElement(s);fs=d.getElementsByTagName(s)[0]; js.src="https://apis.google.com/js/platform.js"; fs.parentNode.insertBefore(js,fs);js.onload=function(){g.load("analytics");}; }(window,document,"script"));');
@@ -254,4 +251,4 @@ angular.module('cruprojects')
   gapi.analytics.ready(function () {
     EncouragmentCtrl.start();
   });
-});
+}]);

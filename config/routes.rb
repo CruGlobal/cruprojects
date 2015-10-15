@@ -1,5 +1,5 @@
 Github::Application.routes.draw do
-  get 'encouragement', to: 'encouragement#index'
+  get 'encouragement', to: 'encouragements#index'
 
   devise_for :admin_users, ActiveAdmin::Devise.config
 
