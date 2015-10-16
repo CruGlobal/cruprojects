@@ -1,7 +1,7 @@
 <div ng-app="cruprojects">
-  <div ng-controller="EncouragementCtrl">
+  <div id="map-container" ng-controller="EncouragementCtrl">
     <div id="google-auth-container"></div>
-    <div id="map"></div>
+    <div id="map" style="width: 100%; height: 100%;"></div>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <%= javascript_include_tag "encouragement" %>

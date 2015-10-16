@@ -2,10 +2,10 @@
 //https://github.com/googleanalytics/ga-dev-tools/blob/master/src/javascript/embed-api/components/active-users.js#L69-L87
 
 angular.module('cruprojects', [])
-.value('googleAnalyticsAPIKey', 123)
+.value('googleAnalyticsClientId', '<%= Rails.configuration.google_client_id %>')
   //TODO: import map and ga real time clients as services
   //TODO: split map into realtime-ga-map directive
-.controller('EncouragmentCtrl', 'googleAnalyticsAPIKey', function($q, googleAnalyticsAPIKey) {
+.controller('EncouragementCtrl', function($scope, $q, googleAnalyticsClientId) {
   var that = this;
 
   that.map = new google.maps.Map(document.getElementById('map'), {
@@ -19,14 +19,14 @@ angular.module('cruprojects', [])
     {
       id: 84323330,
       name: 'God Tools',
-      icon: 'godtools.png',
+      icon: '<%= image_path("godtools.png") %>',
       totalActiveUsers: 0,
       activeUsersByLocation: []
     },
     {
       id: 59955759,
       name: 'MPDX',
-      icon: 'mpdx.png',
+      icon: '<%= image_path("mpdx.png") %>',
       totalActiveUsers: 0,
       activeUsersByLocation: []
     }
@@ -39,7 +39,7 @@ angular.module('cruprojects', [])
     pollingFrequency: 60000
   };
 
-  that.start = function() {
+  $scope.start = function() {
 
     /**
      * Authorize the user immediately if the user has already granted access.
@@ -48,44 +48,44 @@ angular.module('cruprojects', [])
      */
     gapi.analytics.auth.authorize({
       container: 'google-auth-container',
-      clientid: googleAnalyticsAPIKey
+      clientid: googleAnalyticsClientId
     });
 
     // Wait until the user is authorized.
     if (gapi.analytics.auth.isAuthorized()) {
-      that.startPollingForApps(that.apps);
+      that.startPollingForApps();
     }
     else {
-      gapi.analytics.auth.once('success', this.startPollingForApps.bind(that));
+      gapi.analytics.auth.once('success', that.startPollingForApps);
     }
   };
 
-  that.startPollingForApps = function(apps) {
+  that.startPollingForApps = function() {
 
-    var currentAppIndex = 0;
-    var appPollingOffset = that.options.pollingFrequency / apps.length;
-    for (app in apps) {
+    var element = document.getElementById('google-auth-container');
+    element.parentNode.removeChild(element);
+
+    var appPollingOffset = that.options.pollingFrequency / that.apps.length;
+    for (appIndex in that.apps) {
 
       setTimeout(function() {
-        that.pollForApp(app);
-      }, currentAppIndex * appPollingOffset);
-
-      numberOfApps++;
+        that.pollForApp(that.apps[appIndex]);
+      }, appIndex * appPollingOffset);
     }
 
   };
 
   that.pollForApp = function(app) {
 
+    that.removeAppFromMap(app, that.map);
+
+    that.getActiveUsers(app).then(function (appWithLocation) {
+      that.putAppOnMap(appWithLocation)
+    }, function (error) {
+      console.log(error.message);
+    });
+
     setTimeout(function() {
-      that.removeAppFromMap(app, that.map);
-
-      that.getActiveUsers(app).then(function (appWithLocation) {
-        that.putAppOnMap(appWithLocation)
-      }, function (error) {
-        console.log(error.message);
-      });
-
       if (that.options.polling) {
         that.pollForApp(app);
       }
@@ -116,7 +116,7 @@ angular.module('cruprojects', [])
         var regionHeader = 1;
         var cityHeader = 2;
         var activeUserHeader = 3;
-        var newValue = response.totalResults ? +response.rows[0][0] : 0;
+        var newValue = response.totalResults || 0;
         var oldValue = app.totalActiveUsers;
 
         if (newValue != oldValue) {
@@ -136,10 +136,11 @@ angular.module('cruprojects', [])
         }
 
         app.activeUsersByLocation = [];
-        var locationPromises = [];
+        var locationPromises = [], row;
 
-        for(row in response.rows) {
+        for(rowIndex in response.rows) {
 
+          row = response.rows[rowIndex];
           var usersAtLocation = {
             id: row[countryHeader] + '-' + row[cityHeader],
             country: row[countryHeader],
@@ -177,7 +178,7 @@ angular.module('cruprojects', [])
     var location = localStorage.getItem(usersAtLocation.id);
 
     if (location) {
-      deferred.resolve(location);
+      deferred.resolve(angular.fromJson(location));
       return deferred.promise;
     }
 
@@ -187,8 +188,9 @@ angular.module('cruprojects', [])
     geocoder.geocode({'address': address}, function(results, status) {
 
       if (status === google.maps.GeocoderStatus.OK) {
-        location = results[0].geometry.location;
-        localStorage.setItem(usersAtLocation.id, location);
+        locationResult = results[0].geometry.location;
+        location = {lat:locationResult.lat(), lng:locationResult.lng()};
+        localStorage.setItem(usersAtLocation.id, angular.toJson(location));
         deferred.resolve(location);
       } else {
         deferred.reject({message:'Geocode was not successful for the following reason: ' + status});
@@ -202,10 +204,10 @@ angular.module('cruprojects', [])
   that.putAppOnMap = function(app, map) {
 
     map = map || that.map;
-    var marker;
+    var marker, usersAtLocation;
+    for (usersAtLocationIndex in app.activeUsersByLocation) {
 
-    for (usersAtLocation in app.activeUsersByLocation) {
-
+      usersAtLocation = app.activeUsersByLocation[usersAtLocationIndex];
       if (usersAtLocation.location) {
         //TODO: get real instance of marker
         usersAtLocation.marker = new google.maps.Marker({
@@ -223,10 +225,11 @@ angular.module('cruprojects', [])
 
   that.removeAppFromMap = function(app) {
 
-    var marker;
+    var marker, usersAtLocation;
 
-    for (usersAtLocation in app.activeUsersByLocation) {
+    for (usersAtLocationIndex in app.activeUsersByLocation) {
 
+      usersAtLocation = app.activeUsersByLocation[usersAtLocationIndex];
       if (usersAtLocation.marker) {
         usersAtLocation.marker.setMap(null);
         delete usersAtLocation.marker;
@@ -238,7 +241,7 @@ angular.module('cruprojects', [])
 
 })
 //TODO: figure out what really needs to be injected here
-.run(['EncouragmentCtrl', function (EncouragmentCtrl) {
+.run(function () {
 
   // add Google Analytics Script at the end of the page
   var gaCode = document.createTextNode('(function(w,d,s,g,js,fs){ g=w.gapi||(w.gapi={});g.analytics={q:[],ready:function(f){this.q.push(f);}}; js=d.createElement(s);fs=d.getElementsByTagName(s)[0]; js.src="https://apis.google.com/js/platform.js"; fs.parentNode.insertBefore(js,fs);js.onload=function(){g.load("analytics");}; }(window,document,"script"));');
@@ -249,6 +252,6 @@ angular.module('cruprojects', [])
 
   // if ga is ready -> inform service
   gapi.analytics.ready(function () {
-    EncouragmentCtrl.start();
+    angular.element(document.getElementById("map-container")).scope().start();
   });
-}]);
+});
