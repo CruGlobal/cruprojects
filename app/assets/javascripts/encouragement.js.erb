@@ -3,9 +3,7 @@
 
 angular.module('cruprojects', [])
 .value('googleAnalyticsClientId', '<%= Rails.configuration.google_client_id %>')
-  //TODO: import map and ga real time clients as services
-  //TODO: split map into realtime-ga-map directive
-.controller('EncouragementCtrl', function($scope, $q, googleAnalyticsClientId) {
+.controller('EncouragementCtrl', function($scope, $q, $timeout, googleAnalyticsClientId) {
   var that = this;
 
   that.map = new google.maps.Map(document.getElementById('map'), {
@@ -14,23 +12,48 @@ angular.module('cruprojects', [])
     mapTypeId: google.maps.MapTypeId.ROADMAP
   });
 
-  //TODO: get real icons
   that.apps = [
-    {
-      id: 84323330,
-      name: 'God Tools',
-      icon: '<%= image_path("godtools.png") %>',
-      totalActiveUsers: 0,
-      activeUsersByLocation: []
-    },
     {
       id: 59955759,
       name: 'MPDX',
-      icon: '<%= image_path("mpdx.png") %>',
-      totalActiveUsers: 0,
-      activeUsersByLocation: []
+      imagePath: '<%= image_path("mpdx.png") %>'
+    },
+    {
+      id: 84323330,
+      name: 'God Tools',
+      imagePath: '<%= image_path("godtools.png") %>'
+    },
+    {
+      id: 48581737,
+      name: 'MissionHub',
+      imagePath: '<%= image_path("mh.png") %>'
+    },
+    {
+      id: 91712224,
+      name: 'Event Registration Tool',
+      imagePath: '<%= image_path("cru.png") %>'
     }
   ];
+
+  var appMethods = {
+    icon: function () {
+      return {
+        url: this.imagePath,
+        // This marker is 20 pixels wide by 32 pixels high.
+        scaledSize: new google.maps.Size(20, 20),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is the base of the flagpole at (0, 32).
+        anchor: new google.maps.Point(10, 10)
+      };
+    },
+    totalActiveUsers: 0,
+    activeUsersByLocation: []
+  };
+
+  for(appIndex in that.apps) {
+    angular.extend(that.apps[appIndex], appMethods);
+  }
 
   that.options = {
     animateMap: true,
@@ -67,17 +90,13 @@ angular.module('cruprojects', [])
 
     var appPollingOffset = that.options.pollingFrequency / that.apps.length;
     for (appIndex in that.apps) {
-
-      setTimeout(function() {
-        that.pollForApp(that.apps[appIndex]);
-      }, appIndex * appPollingOffset);
+      that.pollForApp(that.apps[appIndex]);
     }
 
   };
 
   that.pollForApp = function(app) {
-
-    that.removeAppFromMap(app, that.map);
+    //that.removeAppFromMap(app, that.map);
 
     that.getActiveUsers(app).then(function (appWithLocation) {
       that.putAppOnMap(appWithLocation)
@@ -85,7 +104,7 @@ angular.module('cruprojects', [])
       console.log(error.message);
     });
 
-    setTimeout(function() {
+    $timeout(function() {
       if (that.options.polling) {
         that.pollForApp(app);
       }
@@ -94,7 +113,7 @@ angular.module('cruprojects', [])
   };
 
   that.rotateMap = function() {
-    setTimeout(function(){
+    $timeout(function(){
       var location = that.map.getCenter();
       location.lng += 5;
       that.map.panTo(location);
@@ -135,31 +154,46 @@ angular.module('cruprojects', [])
           }
         }
 
-        app.activeUsersByLocation = [];
+        var oldActiveUsersByLocation = app.activeUsersByLocation,
+            newActiveUsersByLocation = [];
         var locationPromises = [], row;
 
         for(rowIndex in response.rows) {
 
           row = response.rows[rowIndex];
-          var usersAtLocation = {
-            id: row[countryHeader] + '-' + row[cityHeader],
-            country: row[countryHeader],
-            region: row[regionHeader],
-            city: row[cityHeader],
-            activeUsers: row[activeUserHeader]
-          };
+          var locationId = row[countryHeader] + '-' + row[regionHeader] + '-' + row[cityHeader];
+          if (oldActiveUsersByLocation[locationId]) {
+            oldActiveUsersByLocation[locationId].activeUsers = row[activeUserHeader];
+            oldActiveUsersByLocation[locationId].change = '';
+            newActiveUsersByLocation[locationId] = oldActiveUsersByLocation[locationId];
+            delete oldActiveUsersByLocation[locationId];
+          } else {
+            var usersAtLocation = {
+              id: locationId,
+              country: row[countryHeader],
+              region: row[regionHeader],
+              city: row[cityHeader],
+              activeUsers: row[activeUserHeader],
+              change: 'add'
+            };
 
-          locationPromise = that.getLocation(usersAtLocation);
-          locationPromises.push(locationPromise);
+            locationPromise = that.getLocation(usersAtLocation);
+            locationPromises.push(locationPromise);
 
-          locationPromise.then(function(location){
-            usersAtLocation.location = location;
-          }, function(error){
+            newActiveUsersByLocation[usersAtLocation.id] = usersAtLocation;
+          }
 
-          });
-
-          app.activeUsersByLocation.push(usersAtLocation);
         }
+
+        for(usersIndex in oldActiveUsersByLocation) {
+          var marker = oldActiveUsersByLocation[usersIndex].marker;
+          if (marker) {
+            marker.setMap(null);
+            delete oldActiveUsersByLocation[usersIndex].marker;
+          }
+        }
+
+        app.activeUsersByLocation = newActiveUsersByLocation;
 
         $q.all(locationPromises).then(function(allLocations) {
           deferred.resolve(app);
@@ -175,14 +209,15 @@ angular.module('cruprojects', [])
   that.getLocation = function(usersAtLocation) {
 
     var deferred = $q.defer();
-    var location = localStorage.getItem(usersAtLocation.id);
+    var locationString = localStorage.getItem(usersAtLocation.id);
 
-    if (location) {
-      deferred.resolve(angular.fromJson(location));
+    if (locationString) {
+      var location = angular.fromJson(locationString);
+      usersAtLocation.location = location;
+      deferred.resolve(location);
       return deferred.promise;
     }
 
-    //TODO: get real instance of geocoder
     var geocoder = new google.maps.Geocoder();
     var address = usersAtLocation.city + ', ' + usersAtLocation.region + ' ' + usersAtLocation.country;
     geocoder.geocode({'address': address}, function(results, status) {
@@ -191,6 +226,7 @@ angular.module('cruprojects', [])
         locationResult = results[0].geometry.location;
         location = {lat:locationResult.lat(), lng:locationResult.lng()};
         localStorage.setItem(usersAtLocation.id, angular.toJson(location));
+        usersAtLocation.location = location;
         deferred.resolve(location);
       } else {
         deferred.reject({message:'Geocode was not successful for the following reason: ' + status});
@@ -205,18 +241,18 @@ angular.module('cruprojects', [])
 
     map = map || that.map;
     var marker, usersAtLocation;
-    for (usersAtLocationIndex in app.activeUsersByLocation) {
+    for (usersAtLocationId in app.activeUsersByLocation) {
 
-      usersAtLocation = app.activeUsersByLocation[usersAtLocationIndex];
-      if (usersAtLocation.location) {
-        //TODO: get real instance of marker
+      usersAtLocation = app.activeUsersByLocation[usersAtLocationId];
+      if (usersAtLocation.change == 'add' && usersAtLocation.location) {
         usersAtLocation.marker = new google.maps.Marker({
           map: map,
-          icon: app.icon,
-          label: usersAtLocation.activeUsers,
+          icon: app.icon(),
           draggable: false,
+          animation: google.maps.Animation.DROP,
           position: usersAtLocation.location
         });
+        usersAtLocation.change = '';
       }
 
     }
@@ -227,9 +263,9 @@ angular.module('cruprojects', [])
 
     var marker, usersAtLocation;
 
-    for (usersAtLocationIndex in app.activeUsersByLocation) {
+    for (usersAtLocationId in app.activeUsersByLocation) {
 
-      usersAtLocation = app.activeUsersByLocation[usersAtLocationIndex];
+      usersAtLocation = app.activeUsersByLocation[usersAtLocationId];
       if (usersAtLocation.marker) {
         usersAtLocation.marker.setMap(null);
         delete usersAtLocation.marker;
@@ -240,10 +276,8 @@ angular.module('cruprojects', [])
   };
 
 })
-//TODO: figure out what really needs to be injected here
 .run(function () {
 
-  // add Google Analytics Script at the end of the page
   var gaCode = document.createTextNode('(function(w,d,s,g,js,fs){ g=w.gapi||(w.gapi={});g.analytics={q:[],ready:function(f){this.q.push(f);}}; js=d.createElement(s);fs=d.getElementsByTagName(s)[0]; js.src="https://apis.google.com/js/platform.js"; fs.parentNode.insertBefore(js,fs);js.onload=function(){g.load("analytics");}; }(window,document,"script"));');
   var scriptTag = document.createElement('script');
   scriptTag.type = 'text/javascript';
