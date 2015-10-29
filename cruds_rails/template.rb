@@ -6,7 +6,7 @@ def source_paths
 end
 
 def curl_file(name)
-  run "curl \"https://raw.githubusercontent.com/CruGlobal/cruprojects/add-template/cruds_rails/#{name}\" -o \"#{name}\""
+  run "curl \"https://raw.githubusercontent.com/CruGlobal/cruprojects/master/cruds_rails/#{name}\" -o \"#{name}\""
 end
 
 remove_file 'Gemfile'
@@ -103,6 +103,8 @@ require "action_mailer/railtie"
   run 'echo "OK" > public/lb.txt'
 
   git :init
-  git add: "."
-  git commit: "-a -m 'Initial commit'"
+  if yes?('Initial git commit? (y/n)')
+    git add: "."
+    git commit: "-a -m 'Initial commit'"
+  end
 end
