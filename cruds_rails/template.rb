@@ -19,23 +19,21 @@ gem 'pg'
 
 gem 'newrelic_rpm'
 gem 'rack-cors', require: 'rack/cors'
-gem 'redis', '~> 3.2.1'
-gem 'redis-rails'
+gem 'redis-rails', '~> 4.0.0'
 gem 'rollbar'
 gem 'silencer'
 gem 'syslog-logger'
 
 gem_group :development, :test do
   gem 'dotenv-rails'
-  gem 'guard'
   gem 'guard-rubocop'
+  gem 'guard-rspec'
   gem 'rspec-rails'
   gem 'spring'
   gem 'pry-rails'
 end
 
 gem_group :test do
-  gem 'guard-rspec'
   gem 'webmock'
   gem 'simplecov', require: false
   gem 'factory_girl_rails'
@@ -47,6 +45,7 @@ curl_file 'Dockerfile'
 curl_file '.env'
 gsub_file '.env', /fake-secret-key/, 'fake-' + (0...75).map { ('a'..'z').to_a[rand(26)] }.join
 curl_file '.gitignore'
+curl_file '.dockerignore'
 
 inside 'config' do
   curl_file 'database.yml'
