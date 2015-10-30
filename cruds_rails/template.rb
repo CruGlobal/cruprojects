@@ -12,17 +12,20 @@ end
 remove_file 'Gemfile'
 run 'touch Gemfile'
 add_source 'https://rubygems.org'
-gem 'rails', '~> 4.2.1'
+gem 'rails'
 gem 'puma'
 
 gem 'pg'
 
 gem 'newrelic_rpm'
+gem 'versionist'
 gem 'rack-cors', require: 'rack/cors'
 gem 'redis-rails', '~> 4.0.0'
 gem 'rollbar'
 gem 'silencer'
 gem 'syslog-logger'
+gem 'oj'
+gem 'oj_mimic_json'
 
 gem_group :development, :test do
   gem 'dotenv-rails'
@@ -43,9 +46,10 @@ end
 
 curl_file 'Dockerfile'
 curl_file '.env'
-gsub_file '.env', /fake-secret-key/, 'fake-' + (0...75).map { ('a'..'z').to_a[rand(26)] }.join
+gsub_file '.env', /fake-secret-key/, SecureRandom.hex(64)
 curl_file '.gitignore'
 curl_file '.dockerignore'
+curl_file '.rubocop.yml'
 run 'mkdir -p .bundle'
 
 inside '.bundle' do
@@ -57,15 +61,21 @@ inside 'config' do
 end
 
 after_bundle do
+  run 'bundle binstubs rubocop'
+  run 'bundle binstubs rspec'
   remove_file 'public/index.html'
   remove_dir 'app/views' if yes?("Delete all the view files? (y/n) ")
   remove_dir 'app/controllers/concerns'
   remove_dir 'test'
 
   insert_into_file 'config/application.rb', after: "require 'rails/all'\n" do <<-RUBY
-require "active_record/railtie"
-require "action_controller/railtie"
-require "action_mailer/railtie"
+# require 'active_model/railtie'
+# require 'active_job/railtie'
+require 'active_record/railtie'
+require 'action_controller/railtie'
+require 'action_mailer/railtie'
+# require 'action_view/railtie'
+# require 'sprockets/railtie'
   RUBY
   end
 
@@ -82,7 +92,24 @@ require "action_mailer/railtie"
       g.javascripts     false
     end
 
+    config.middleware.insert_before 0, "Rack::Cors" do
+      allow do
+        origins '*'
+        resource '*',
+          :headers => :any,
+          :methods => [:get, :post, :delete, :put, :patch, :options, :head],
+          :max_age => 0
+      end
+    end
+
     config.log_formatter = ::Logger::Formatter.new
+    config.middleware.swap Rails::Rack::Logger, Silencer::Logger, config.log_tags, silence: ['/monitors/lb']
+  RUBY
+  end
+
+  environment env: 'production' do <<-RUBY
+    config.logger = ActiveSupport::TaggedLogging.new(Logger::Syslog.new("#{application_name}-#{ENV['ENVIRONMENT']}", Syslog::LOG_LOCAL7))
+    config.log_tags = [lambda { |request| "ReqID:#{request.uuid}" }]
     config.middleware.swap Rails::Rack::Logger, Silencer::Logger, config.log_tags, silence: ['/monitors/lb']
   RUBY
   end
@@ -102,10 +129,9 @@ require "action_mailer/railtie"
   RUBY
   end
   insert_into_file 'app/controllers/monitors_controller.rb', after: "def lb\n" do <<-RUBY
-    render text: File.read(Rails.public_path.join('lb.txt'))
+    render text: 'OK'
   RUBY
   end
-  run 'echo "OK" > public/lb.txt'
 
   git :init
   if yes?('Initial git commit? (y/n)')
