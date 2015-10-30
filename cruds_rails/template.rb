@@ -46,6 +46,11 @@ curl_file '.env'
 gsub_file '.env', /fake-secret-key/, 'fake-' + (0...75).map { ('a'..'z').to_a[rand(26)] }.join
 curl_file '.gitignore'
 curl_file '.dockerignore'
+run 'mkdir -p .bundle'
+
+inside '.bundle' do
+  curl_file 'config'
+end
 
 inside 'config' do
   curl_file 'database.yml'
