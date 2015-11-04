@@ -107,13 +107,6 @@ require 'action_mailer/railtie'
   RUBY
   end
 
-  environment env: 'production' do <<-RUBY
-    config.logger = ActiveSupport::TaggedLogging.new(Logger::Syslog.new("#{application_name}-#{ENV['ENVIRONMENT']}", Syslog::LOG_LOCAL7))
-    config.log_tags = [lambda { |request| "ReqID:#{request.uuid}" }]
-    config.middleware.swap Rails::Rack::Logger, Silencer::Logger, config.log_tags, silence: ['/monitors/lb']
-  RUBY
-  end
-
   run 'spring stop'
   generate 'rspec:install'
   run 'guard init'
