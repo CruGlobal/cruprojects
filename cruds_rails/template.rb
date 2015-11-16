@@ -63,6 +63,8 @@ end
 after_bundle do
   run 'bundle binstubs rubocop'
   run 'bundle binstubs rspec'
+  run 'bundle package'
+
   remove_file 'public/index.html'
   remove_dir 'app/views' if yes?("Delete all the view files? (y/n) ")
   remove_dir 'app/controllers/concerns'
