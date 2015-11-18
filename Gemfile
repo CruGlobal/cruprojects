@@ -35,6 +35,11 @@ gem 'dalli'
 
 gem 'devise', '~> 3.2.0'
 
+gem 'syslog-logger'
+gem 'puma'
+gem 'redis-rails'
+gem 'redis-namespace'
+
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
@@ -47,6 +52,10 @@ end
 group :development do
   gem 'unicorn'
   gem 'spring'
+end
+
+group :development, :test do
+  gem 'dotenv-rails'
 end
 
 # Use Capistrano for deployment

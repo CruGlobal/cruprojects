@@ -1,0 +1,15 @@
+development: &dev
+  adapter: mysql2
+  encoding: utf8
+  reconnect: true
+  pool: <%= ENV['DB_ENV_MYSQL_POOL'] || 25 %>
+  database: <%= ENV['DB_ENV_MYSQL_DB'] || 'uscm' %>
+  username: <%= ENV.fetch('DB_ENV_MYSQL_USER') %>
+  password: <%= ENV['DB_ENV_MYSQL_PASS'] %>
+  host: <%= ENV['DB_PORT_3306_TCP_ADDR'] %>
+
+production:
+  <<: *dev
+
+staging:
+  <<: *dev

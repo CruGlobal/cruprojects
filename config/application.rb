@@ -19,12 +19,11 @@ module Github
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
-    config.from_file 'settings.yml'
+    config.from_file 'secrets.yml'
 
-    begin
-      config.cache_store = :dalli_store, YAML.load_file("#{Rails.root}/config/memcached.yml")[Rails.env]['host']
-    rescue
-      config.cache_store = :dalli_store, '127.0.0.1'
+    unless Rails.env.development? || Rails.env.test?
+      config.logger = ActiveSupport::TaggedLogging.new(Logger::Syslog.new("cruprojects-#{ENV['ENVIRONMENT']}", Syslog::LOG_LOCAL7))
+      config.log_tags = [ lambda { |request| "ReqID:#{request.uuid}" } ]
     end
   end
 end
