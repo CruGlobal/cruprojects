@@ -20,4 +20,6 @@ Github::Application.routes.draw do
   root "repos#index"
 
   get '/auth/:provider/callback', to: 'sessions#create'
+
+  get 'monitors/lb' => 'monitors#lb'
 end
